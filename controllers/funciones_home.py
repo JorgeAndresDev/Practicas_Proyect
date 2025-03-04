@@ -78,64 +78,42 @@ def procesar_imagen_perfil(foto):
 # Lista de Empleados
 def sql_lista_empleadosBD():
     try:
-        with connectionBD() as conexion_MySQLdb:
-            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
-                querySQL = (f"""
-                    SELECT 
-                        e.id_empleado,
-                        e.nombre_empleado, 
-                        e.apellido_empleado,
-                        e.salario_empleado,
-                        e.foto_empleado,
-                        CASE
-                            WHEN e.sexo_empleado = 1 THEN 'Masculino'
-                            ELSE 'Femenino'
-                        END AS sexo_empleado
-                    FROM tbl_empleados AS e
-                    ORDER BY e.id_empleado DESC
-                    """)
-                cursor.execute(querySQL,)
+        print("Intentando conectar a la BD...")  # Depuración
+        connection = connectionBD()
+        if connection:
+            print("Conexión exitosa a la BD")  # Depuración
+            with connection.cursor(dictionary=True) as cursor:
+                querySQL = """
+                    SELECT
+                        CC,
+                        NOM,
+                        CAR,
+                        CENTRO,
+                        CASH,
+                        SAC,
+                        `CHECK`,  -- Escapado con backticks
+                        `MOD`,    -- Escapado con backticks
+                        ER,
+                        PARADAS,
+                        PERFORMANCE
+                    FROM tbl_empleados
+                    ORDER BY CC DESC
+                """
+                print("Ejecutando consulta SQL...")  # Depuración
+                cursor.execute(querySQL)
                 empleadosBD = cursor.fetchall()
-        return empleadosBD
+                print("Datos obtenidos de la BD:", empleadosBD)  # Depuración
+                return empleadosBD
+        else:
+            print("No se pudo establecer la conexión a la BD")  # Depuración
+            return None
     except Exception as e:
-        print(
-            f"Errro en la función sql_lista_empleadosBD: {e}")
+        print(f"Error en la función sql_lista_empleadosBD: {e}")  # Depuración
         return None
-
-
-# Detalles del Empleado
-def sql_detalles_empleadosBD(idEmpleado):
-    try:
-        with connectionBD() as conexion_MySQLdb:
-            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
-                querySQL = ("""
-                    SELECT 
-                        e.id_empleado,
-                        e.nombre_empleado, 
-                        e.apellido_empleado,
-                        e.salario_empleado,
-                        CASE
-                            WHEN e.sexo_empleado = 1 THEN 'Masculino'
-                            ELSE 'Femenino'
-                        END AS sexo_empleado,
-                        e.telefono_empleado, 
-                        e.email_empleado,
-                        e.profesion_empleado,
-                        e.foto_empleado,
-                        DATE_FORMAT(e.fecha_registro, '%Y-%m-%d %h:%i %p') AS fecha_registro
-                    FROM tbl_empleados AS e
-                    WHERE id_empleado =%s
-                    ORDER BY e.id_empleado DESC
-                    """)
-                cursor.execute(querySQL, (idEmpleado,))
-                empleadosBD = cursor.fetchone()
-        return empleadosBD
-    except Exception as e:
-        print(
-            f"Errro en la función sql_detalles_empleadosBD: {e}")
-        return None
-
-
+    finally:
+        if connection:
+            connection.close()
+            print("Conexión cerrada")  # Depuración
 # Funcion Empleados Informe (Reporte)
 def empleadosReporte():
     try:
@@ -143,7 +121,7 @@ def empleadosReporte():
             with conexion_MySQLdb.cursor(dictionary=True) as cursor:
                 querySQL = ("""
                     SELECT 
-                        e.id_empleado,
+                        e.cc,
                         e.nombre_empleado, 
                         e.apellido_empleado,
                         e.salario_empleado,
@@ -156,7 +134,7 @@ def empleadosReporte():
                             ELSE 'Femenino'
                         END AS sexo_empleado
                     FROM tbl_empleados AS e
-                    ORDER BY e.id_empleado DESC
+                    ORDER BY e.cc DESC
                     """)
                 cursor.execute(querySQL,)
                 empleadosBD = cursor.fetchall()
@@ -226,7 +204,7 @@ def buscarEmpleadoBD(search):
             with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
                 querySQL = ("""
                         SELECT 
-                            e.id_empleado,
+                            e.cc,
                             e.nombre_empleado, 
                             e.apellido_empleado,
                             e.salario_empleado,
@@ -236,7 +214,7 @@ def buscarEmpleadoBD(search):
                             END AS sexo_empleado
                         FROM tbl_empleados AS e
                         WHERE e.nombre_empleado LIKE %s 
-                        ORDER BY e.id_empleado DESC
+                        ORDER BY e.cc DESC
                     """)
                 search_pattern = f"%{search}%"  # Agregar "%" alrededor del término de búsqueda
                 mycursor.execute(querySQL, (search_pattern,))
@@ -254,7 +232,7 @@ def buscarEmpleadoUnico(id):
             with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
                 querySQL = ("""
                         SELECT 
-                            e.id_empleado,
+                            e.cc,
                             e.nombre_empleado, 
                             e.apellido_empleado,
                             e.sexo_empleado,
@@ -264,7 +242,7 @@ def buscarEmpleadoUnico(id):
                             e.salario_empleado,
                             e.foto_empleado
                         FROM tbl_empleados AS e
-                        WHERE e.id_empleado =%s LIMIT 1
+                        WHERE e.cc =%s LIMIT 1
                     """)
                 mycursor.execute(querySQL, (id,))
                 empleado = mycursor.fetchone()
@@ -289,7 +267,7 @@ def procesar_actualizacion_form(data):
                 salario_sin_puntos = re.sub(
                     '[^0-9]+', '', data.form['salario_empleado'])
                 salario_empleado = int(salario_sin_puntos)
-                id_empleado = data.form['id_empleado']
+                id_empleado = data.form['cc']
 
                 if data.files['foto_empleado']:
                     file = data.files['foto_empleado']
@@ -306,11 +284,11 @@ def procesar_actualizacion_form(data):
                             profesion_empleado = %s,
                             salario_empleado = %s,
                             foto_empleado = %s
-                        WHERE id_empleado = %s
+                        WHERE cc = %s
                     """
                     values = (nombre_empleado, apellido_empleado, sexo_empleado,
                               telefono_empleado, email_empleado, profesion_empleado,
-                              salario_empleado, fotoForm, id_empleado)
+                              salario_empleado, fotoForm, cc)
                 else:
                     querySQL = """
                         UPDATE tbl_empleados
@@ -322,11 +300,11 @@ def procesar_actualizacion_form(data):
                             email_empleado = %s,
                             profesion_empleado = %s,
                             salario_empleado = %s
-                        WHERE id_empleado = %s
+                        WHERE cc = %s
                     """
                     values = (nombre_empleado, apellido_empleado, sexo_empleado,
                               telefono_empleado, email_empleado, profesion_empleado,
-                              salario_empleado, id_empleado)
+                              salario_empleado, cc)
 
                 cursor.execute(querySQL, values)
                 conexion_MySQLdb.commit()
@@ -352,12 +330,12 @@ def lista_usuariosBD():
 
 
 # Eliminar uEmpleado
-def eliminarEmpleado(id_empleado, foto_empleado):
+def eliminarEmpleado(cc, foto_empleado):
     try:
         with connectionBD() as conexion_MySQLdb:
             with conexion_MySQLdb.cursor(dictionary=True) as cursor:
-                querySQL = "DELETE FROM tbl_empleados WHERE id_empleado=%s"
-                cursor.execute(querySQL, (id_empleado,))
+                querySQL = "DELETE FROM tbl_empleados WHERE cc=%s"
+                cursor.execute(querySQL, (cc,))
                 conexion_MySQLdb.commit()
                 resultado_eliminar = cursor.rowcount
 

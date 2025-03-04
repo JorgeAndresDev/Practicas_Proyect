@@ -18,45 +18,17 @@ def viewFormEmpleado():
         return redirect(url_for('inicio'))
 
 
-@app.route('/form-registrar-empleado', methods=['POST'])
-def formEmpleado():
-    if 'conectado' in session:
-        if 'foto_empleado' in request.files:
-            foto_perfil = request.files['foto_empleado']
-            resultado = procesar_form_empleado(request.form, foto_perfil)
-            if resultado:
-                return redirect(url_for('lista_empleados'))
-            else:
-                flash('El empleado NO fue registrado.', 'error')
-                return render_template(f'{PATH_URL}/form_empleado.html')
-    else:
-        flash('primero debes iniciar sesión.', 'error')
-        return redirect(url_for('inicio'))
-
 
 @app.route('/lista-de-empleados', methods=['GET'])
 def lista_empleados():
-    if 'conectado' in session:
-        return render_template(f'{PATH_URL}/lista_empleados.html', empleados=sql_lista_empleadosBD())
+    print("Accediendo a la ruta /lista-de-empleados...")  # Depuración
+    empleados = sql_lista_empleadosBD()
+    if empleados is not None:
+        print("Datos obtenidos correctamente, renderizando plantilla...")  # Depuración
+        return render_template('lista_empleados.html', empleados=empleados)
     else:
-        flash('primero debes iniciar sesión.', 'error')
-        return redirect(url_for('inicio'))
-
-
-@app.route("/detalles-empleado/", methods=['GET'])
-@app.route("/detalles-empleado/<int:idEmpleado>", methods=['GET'])
-def detalleEmpleado(idEmpleado=None):
-    if 'conectado' in session:
-        # Verificamos si el parámetro idEmpleado es None o no está presente en la URL
-        if idEmpleado is None:
-            return redirect(url_for('inicio'))
-        else:
-            detalle_empleado = sql_detalles_empleadosBD(idEmpleado) or []
-            return render_template(f'{PATH_URL}/detalles_empleado.html', detalle_empleado=detalle_empleado)
-    else:
-        flash('Primero debes iniciar sesión.', 'error')
-        return redirect(url_for('inicio'))
-
+        print("Error al obtener la lista de empleados")  # Depuración
+        return "Error al obtener la lista de empleados", 500
 
 # Buscadon de empleados
 @app.route("/buscando-empleado", methods=['POST'])
@@ -87,7 +59,7 @@ def viewEditarEmpleado(id):
 def actualizarEmpleado():
     resultData = procesar_actualizacion_form(request)
     if resultData:
-        return redirect(url_for('lista_empleados'))
+        return redirect(url_for('lista-de-empleados'))
 
 
 @app.route("/lista-de-usuarios", methods=['GET'])
@@ -107,12 +79,12 @@ def borrarUsuario(id):
         return redirect(url_for('usuarios'))
 
 
-@app.route('/borrar-empleado/<string:id_empleado>/<string:foto_empleado>', methods=['GET'])
+@app.route('/borrar-empleado/<string:cc>/<string:foto_empleado>', methods=['GET'])
 def borrarEmpleado(id_empleado, foto_empleado):
     resp = eliminarEmpleado(id_empleado, foto_empleado)
     if resp:
         flash('El Empleado fue eliminado correctamente', 'success')
-        return redirect(url_for('lista_empleados'))
+        return redirect(url_for('lista-de-empleados'))
 
 
 @app.route("/descargar-informe-empleados/", methods=['GET'])

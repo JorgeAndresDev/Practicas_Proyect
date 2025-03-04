@@ -29,14 +29,14 @@
       <form
         class="form-horizontal mx-auto"
         method="POST"
-        action="{{ url_for('actualizarEmpleado', id = respuestaEmpleado.id_empleado ) }}"
+        action="{{ url_for('actualizarEmpleado', id = respuestaEmpleado.cc ) }}"
         autocomplete="off"
         enctype="multipart/form-data">
         <input
           type="text"
           class="form-control"
-          name="id_empleado"
-          value="{{ respuestaEmpleado.id_empleado }}"
+          name="cc"
+          value="{{ respuestaEmpleado.cc }}"
           required
           hidden />
 
