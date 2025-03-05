@@ -19,27 +19,25 @@ def viewFormEmpleado():
 
 
 
-@app.route('/lista-de-empleados', methods=['GET'])
+@app.route('/lista_empleados')
 def lista_empleados():
-    print("Accediendo a la ruta /lista-de-empleados...")  # Depuración
     empleados = sql_lista_empleadosBD()
-    if empleados is not None:
-        print("Datos obtenidos correctamente, renderizando plantilla...")  # Depuración
-        return render_template('lista_empleados.html', empleados=empleados)
-    else:
-        print("Error al obtener la lista de empleados")  # Depuración
-        return "Error al obtener la lista de empleados", 500
+    print("Ruta de la plantilla:", app.template_folder)  # Depuración
+    return render_template('public/empleados/lista_empleados.html', empleados=empleados)
 
 # Buscadon de empleados
 @app.route("/buscando-empleado", methods=['POST'])
 def viewBuscarEmpleadoBD():
-    resultadoBusqueda = buscarEmpleadoBD(request.json['busqueda'])
+    if 'busqueda' not in request.json:
+        return jsonify({'error': 'El campo "busqueda" es requerido'}), 400
+    
+    search = request.json['busqueda']
+    resultadoBusqueda = buscarEmpleadoBD(search)
+    
     if resultadoBusqueda:
         return render_template(f'{PATH_URL}/resultado_busqueda_empleado.html', dataBusqueda=resultadoBusqueda)
     else:
-        return jsonify({'fin': 0})
-
-
+        return jsonify({'fin': 0})  # No se encontraron resultados
 @app.route("/editar-empleado/<int:id>", methods=['GET'])
 def viewEditarEmpleado(id):
     if 'conectado' in session:
@@ -59,7 +57,7 @@ def viewEditarEmpleado(id):
 def actualizarEmpleado():
     resultData = procesar_actualizacion_form(request)
     if resultData:
-        return redirect(url_for('lista-de-empleados'))
+        return redirect(url_for('lista_empleados'))
 
 
 @app.route("/lista-de-usuarios", methods=['GET'])
@@ -84,7 +82,7 @@ def borrarEmpleado(id_empleado, foto_empleado):
     resp = eliminarEmpleado(id_empleado, foto_empleado)
     if resp:
         flash('El Empleado fue eliminado correctamente', 'success')
-        return redirect(url_for('lista-de-empleados'))
+        return redirect(url_for('lista_empleados'))
 
 
 @app.route("/descargar-informe-empleados/", methods=['GET'])

@@ -76,45 +76,38 @@ def procesar_imagen_perfil(foto):
 
 
 # Lista de Empleados
-def sql_lista_empleadosBD():
-    try:
-        print("Intentando conectar a la BD...")  # Depuración
-        connection = connectionBD()
-        if connection:
-            print("Conexión exitosa a la BD")  # Depuración
-            with connection.cursor(dictionary=True) as cursor:
-                querySQL = """
-                    SELECT
-                        CC,
-                        NOM,
-                        CAR,
-                        CENTRO,
-                        CASH,
-                        SAC,
-                        `CHECK`,  -- Escapado con backticks
-                        `MOD`,    -- Escapado con backticks
-                        ER,
-                        PARADAS,
-                        PERFORMANCE
-                    FROM tbl_empleados
-                    ORDER BY CC DESC
-                """
-                print("Ejecutando consulta SQL...")  # Depuración
-                cursor.execute(querySQL)
-                empleadosBD = cursor.fetchall()
-                print("Datos obtenidos de la BD:", empleadosBD)  # Depuración
-                return empleadosBD
-        else:
-            print("No se pudo establecer la conexión a la BD")  # Depuración
-            return None
-    except Exception as e:
-        print(f"Error en la función sql_lista_empleadosBD: {e}")  # Depuración
-        return None
-    finally:
-        if connection:
+def sql_lista_empleadosBD():     
+    try:         
+        connection = connectionBD()         
+        if connection:             
+            with connection.cursor(dictionary=True) as cursor:                 
+                querySQL = """                     
+                    SELECT                         
+                        CC,                         
+                        NOM,                         
+                        CAR,                         
+                        CENTRO,                         
+                        CASH,                         
+                        SAC,                         
+                        `CHECK`,                         
+                        `MOD`,                         
+                        ER,                         
+                        PARADAS,                         
+                        PERFORMANCE                     
+                    FROM tbl_empleados                     
+                    ORDER BY CC DESC                 
+                """                 
+                cursor.execute(querySQL)                 
+                empleadosBD = cursor.fetchall()                 
+                return empleadosBD         
+        else:             
+            return None     
+    except Exception as e:         
+        print(f"Error en la función sql_lista_empleadosBD: {e}")         
+        return None     
+    finally:         
+        if connection:             
             connection.close()
-            print("Conexión cerrada")  # Depuración
-# Funcion Empleados Informe (Reporte)
 def empleadosReporte():
     try:
         with connectionBD() as conexion_MySQLdb:
@@ -202,30 +195,29 @@ def buscarEmpleadoBD(search):
     try:
         with connectionBD() as conexion_MySQLdb:
             with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
-                querySQL = ("""
-                        SELECT 
-                            e.cc,
-                            e.nombre_empleado, 
-                            e.apellido_empleado,
-                            e.salario_empleado,
-                            CASE
-                                WHEN e.sexo_empleado = 1 THEN 'Masculino'
-                                ELSE 'Femenino'
-                            END AS sexo_empleado
-                        FROM tbl_empleados AS e
-                        WHERE e.nombre_empleado LIKE %s 
-                        ORDER BY e.cc DESC
-                    """)
+                querySQL = """
+                    SELECT 
+                        CC, 
+                        NOM AS Nombre,  <!-- Renombramos NOM a Nombre para mayor claridad -->
+                        CAR, 
+                        CENTRO AS Centro  <!-- Renombramos CENTRO a Centro -->
+                    FROM tbl_empleados
+                    WHERE 
+                        CC LIKE %s OR 
+                        NOM LIKE %s OR 
+                        CAR LIKE %s OR 
+                        CENTRO LIKE %s
+                    ORDER BY CC DESC
+                """
                 search_pattern = f"%{search}%"  # Agregar "%" alrededor del término de búsqueda
-                mycursor.execute(querySQL, (search_pattern,))
+                mycursor.execute(querySQL, (
+                    search_pattern, search_pattern, search_pattern, search_pattern
+                ))
                 resultado_busqueda = mycursor.fetchall()
                 return resultado_busqueda
-
     except Exception as e:
-        print(f"Ocurrió un error en def buscarEmpleadoBD: {e}")
-        return []
-
-
+        print(f"Error en la función buscarEmpleadoBD: {e}")
+        return None
 def buscarEmpleadoUnico(id):
     try:
         with connectionBD() as conexion_MySQLdb:
