@@ -86,14 +86,7 @@ def sql_lista_empleadosBD():
                         CC,                         
                         NOM,                         
                         CAR,                         
-                        CENTRO,                         
-                        CASH,                         
-                        SAC,                         
-                        `CHECK`,                         
-                        `MOD`,                         
-                        ER,                         
-                        PARADAS,                         
-                        PERFORMANCE                     
+                        CENTRO                                            
                     FROM tbl_empleados                     
                     ORDER BY CC DESC                 
                 """                 
@@ -108,6 +101,8 @@ def sql_lista_empleadosBD():
     finally:         
         if connection:             
             connection.close()
+
+
 def empleadosReporte():
     try:
         with connectionBD() as conexion_MySQLdb:
@@ -322,28 +317,24 @@ def lista_usuariosBD():
 
 
 # Eliminar uEmpleado
-def eliminarEmpleado(cc, foto_empleado):
+def sql_eliminar_empleado(cc):
     try:
-        with connectionBD() as conexion_MySQLdb:
-            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
-                querySQL = "DELETE FROM tbl_empleados WHERE cc=%s"
+        connection = connectionBD()
+        if connection:
+            with connection.cursor() as cursor:
+                # Consulta para eliminar el empleado
+                querySQL = "DELETE FROM tbl_empleados WHERE CC = %s"
                 cursor.execute(querySQL, (cc,))
-                conexion_MySQLdb.commit()
-                resultado_eliminar = cursor.rowcount
-
-                if resultado_eliminar:
-                    # Eliminadon foto_empleado desde el directorio
-                    basepath = path.dirname(__file__)
-                    url_File = path.join(
-                        basepath, '../static/fotos_empleados', foto_empleado)
-
-                    if path.exists(url_File):
-                        remove(url_File)  # Borrar foto desde la carpeta
-
-        return resultado_eliminar
+                connection.commit()
+                return True
+        else:
+            return False
     except Exception as e:
-        print(f"Error en eliminarEmpleado : {e}")
-        return []
+        print(f"Error al eliminar empleado: {e}")
+        return False
+    finally:
+        if connection:
+            connection.close()
 
 
 # Eliminar usuario

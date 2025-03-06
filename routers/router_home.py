@@ -77,12 +77,20 @@ def borrarUsuario(id):
         return redirect(url_for('usuarios'))
 
 
-@app.route('/borrar-empleado/<string:cc>/<string:foto_empleado>', methods=['GET'])
-def borrarEmpleado(id_empleado, foto_empleado):
-    resp = eliminarEmpleado(id_empleado, foto_empleado)
-    if resp:
-        flash('El Empleado fue eliminado correctamente', 'success')
-        return redirect(url_for('lista_empleados'))
+@app.route('/eliminar-empleado/<string:cc>')
+def eliminar_empleado(cc):
+    # Eliminamos el empleado de la base de datos
+    resultado = sql_eliminar_empleado(cc)
+    
+    # Mensaje flash para mostrar al usuario
+    if resultado:
+        flash('Empleado eliminado correctamente', 'success')
+    else:
+        flash('Error al eliminar empleado', 'danger')
+    
+    # Redireccionamos a la lista de empleados
+    return redirect(url_for('lista_empleados'))
+    
 
 
 @app.route("/descargar-informe-empleados/", methods=['GET'])
