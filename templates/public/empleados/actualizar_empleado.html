@@ -1,0 +1,79 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+{% block title %}Crud con Python 🐍 | Actualizar Empleado{% endblock %}
+<!---->
+{% block customCSS %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+{% endblock %}
+
+<!--Inicio del block-->
+{% block body %}
+<div class="card" style="border-radius: 0px !important">
+  {% if respuestaEmpleado|length %}
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">
+        <a href="/lista_empleados">
+          <i class="bi bi-arrow-left-circle"></i>
+        </a>
+        ACTUALIZAR DATOS DEL EMPLEADO
+      </h3>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-10">
+        <form action="{{ url_for('actualizar_empleado', id=empleado.id) }}" method="POST">
+            <div class="mb-3">
+                <label for="cc_empleado" class="form-label">CC:</label>
+                <input type="number" class="form-control" id="cc_empleado" name="cc_empleado" value="{{ empleado.cc_empleado }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="nombre_empleado" class="form-label">Nombre:</label>
+                <input type="text" class="form-control" id="nombre_empleado" name="nombre_empleado" value="{{ empleado.nombre_empleado }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="cargo_empleado" class="form-label">Cargo:</label>
+                <select class="form-select" id="cargo_empleado" name="cargo_empleado" required>
+                    <option value="">Seleccione un cargo</option>
+                    <option value="temporal" {% if empleado.cargo_empleado == 'temporal' %}selected{% endif %}>Temporal</option>
+                    <option value="RR" {% if empleado.cargo_empleado == 'RR' %}selected{% endif %}>RR</option>
+                    <option value="conductor" {% if empleado.cargo_empleado == 'conductor' %}selected{% endif %}>Conductor</option>
+                    <option value="auxiliar de distribución" {% if empleado.cargo_empleado == 'auxiliar de distribución' %}selected{% endif %}>Auxiliar de distribución</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="centro_empleado" class="form-label">Centro:</label>
+                <select class="form-select" id="centro_empleado" name="centro_empleado" required>
+                    <option value="">Seleccione un centro</option>
+                    <option value="corozal" {% if empleado.centro_empleado == 'corozal' %}selected{% endif %}>Corozal</option>
+                    <option value="magangue" {% if empleado.centro_empleado == 'magangue' %}selected{% endif %}>Magangue</option>
+                </select>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <a href="{{ url_for('lista_empleados') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center">No existe el empleado</h3>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block customJS %}
+<script src="{{ url_for('static', filename ='assets/customJS/file.js') }}"></script>
+{% endblock %}

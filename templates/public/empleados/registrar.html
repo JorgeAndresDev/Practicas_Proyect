@@ -1,0 +1,75 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+{% block title %}Distribución| Registrar Empleado{% endblock %}
+<!---->
+{% block customCSS %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+{% endblock %}
+
+<!--Inicio del block-->
+{% block body %}
+<div class="card " style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">REGISTRAR NUEVO EMPLEADO</h3>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-10">
+      <form method="POST" action="/registrar_empleado">
+        <div class="form-group">
+            <label for="cc">CC (Cédula de Ciudadanía)</label>
+            <input type="number" class="form-control" id="cc" name="cc" required>
+        </div>
+        <div class="form-group">
+            <label for="nom">Nombre</label>
+            <input type="text" class="form-control" id="nom" name="nom" required>
+        </div>
+        <div class="form-group">
+            <label for="car">Cargo</label>
+            <input type="text" class="form-control" id="car" name="car" required>
+        </div>
+        <div class="form-group">
+            <label for="centro">Centro de Trabajo</label>
+            <input type="text" class="form-control" id="centro" name="centro" required>
+        </div>
+        <div class="form-group">
+            <label for="cash">CASH</label>
+            <input type="text" class="form-control" id="cash" name="cash" required>
+        </div>
+        <div class="form-group">
+            <label for="sac">SAC</label>
+            <input type="text" class="form-control" id="sac" name="sac" required>
+        </div>
+        <div class="form-group">
+            <label for="check">CHECK</label>
+            <input type="text" class="form-control" id="check" name="check" required>
+        </div>
+        <div class="form-group">
+            <label for="mod">MOD</label>
+            <input type="text" class="form-control" id="mod" name="mod" required>
+        </div>
+        <div class="form-group">
+            <label for="er">ER</label>
+            <input type="text" class="form-control" id="er" name="er" required>
+        </div>
+        <div class="form-group">
+            <label for="paradas">Paradas</label>
+            <input type="text" class="form-control" id="paradas" name="paradas" required>
+        </div>
+        <div class="form-group">
+            <label for="performance">Performance</label>
+            <input type="text" class="form-control" id="performance" name="performance" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Crear Empleado</button>
+    </form>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block customJS %}
+<script src="{{ url_for('static', filename ='assets/customJS/file.js') }}"></script>
+{% endblock %}

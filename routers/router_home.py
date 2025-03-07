@@ -9,13 +9,36 @@ from controllers.funciones_home import *
 PATH_URL = "public/empleados"
 
 
-@app.route('/registrar-empleado', methods=['GET'])
+@app.route('/registrar_empleado', methods=['GET', 'POST'])
 def viewFormEmpleado():
-    if 'conectado' in session:
-        return render_template(f'{PATH_URL}/form_empleado.html')
-    else:
-        flash('primero debes iniciar sesión.', 'error')
-        return redirect(url_for('inicio'))
+    if request.method == 'GET':
+        return render_template('public/empleados/registrar.html')
+    
+    elif request.method == 'POST':
+        # Obtener los datos del formulario
+        cc = request.form.get('cc')
+        nom = request.form.get('nom')
+        car = request.form.get('car')
+        centro = request.form.get('centro')
+        cash = request.form.get('cash')
+        sac = request.form.get('sac')
+        check = request.form.get('check')
+        mod = request.form.get('mod')
+        er = request.form.get('er')
+        paradas = request.form.get('paradas')
+        performance = request.form.get('performance')
+        
+        # Llamar a la función para crear el empleado
+        resultado, mensaje = registrar_empleado(cc, nom, car, centro, cash, sac, check, mod, er, paradas, performance)
+        
+        # Mostrar mensaje de éxito o error
+        if resultado:
+            flash(mensaje, 'success')  # Mensaje de éxito
+        else:
+            flash(mensaje, 'error')  # Mensaje de error
+        
+        # Redirigir al formulario de registro
+        return redirect(url_for('viewFormEmpleado'))
 
 
 
@@ -24,6 +47,8 @@ def lista_empleados():
     empleados = sql_lista_empleadosBD()
     print("Ruta de la plantilla:", app.template_folder)  # Depuración
     return render_template('public/empleados/lista_empleados.html', empleados=empleados)
+
+
 
 # Buscadon de empleados
 @app.route("/buscando-empleado", methods=['POST'])
@@ -100,3 +125,6 @@ def reporteBD():
     else:
         flash('primero debes iniciar sesión.', 'error')
         return redirect(url_for('inicio'))
+    
+
+    

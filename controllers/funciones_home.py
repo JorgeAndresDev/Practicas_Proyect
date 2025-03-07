@@ -18,6 +18,42 @@ import openpyxl  # Para generar el excel
 from flask import send_file
 
 
+# Función para crear un nuevo empleado
+def registrar_empleado(cc, nom, car, centro, cash, sac, check, mod, er, paradas, performance):
+    try:
+        # Crear conexión a la base de datos
+        conexion = connectionBD()
+        cursor = conexion.cursor(dictionary=True)
+        
+        # Verificar si el empleado ya existe por cédula
+        sql_check = "SELECT * FROM tbl_empleados WHERE cc = %s"  # Cambiado a tbl_empleados
+        cursor.execute(sql_check, (cc,))
+        empleado_existente = cursor.fetchone()
+        
+        if empleado_existente:
+            # Si el empleado ya existe, retornar False y un mensaje
+            return False, "Ya existe un empleado registrado con esta cédula"
+        
+        # Insertar el empleado en la base de datos
+        sql_insert = """
+            INSERT INTO tbl_empleados (cc, nom, car, centro, cash, sac, `check`, mod, er, paradas, performance) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """  # Cambiado a tbl_empleados
+        
+        cursor.execute(sql_insert, (cc, nom, car, centro, cash, sac, check, mod, er, paradas, performance))
+        conexion.commit()
+        
+        # Cerrar la conexión
+        cursor.close()
+        conexion.close()
+        
+        # Retornar éxito y mensaje
+        return True, "Empleado registrado correctamente"
+        
+    except Exception as e:
+        # En caso de error, retornar False y el mensaje de error
+        return False, f"Error al registrar empleado: {str(e)}"
+
 def procesar_form_empleado(dataForm, foto_perfil):
     # Formateando Salario
     salario_sin_puntos = re.sub('[^0-9]+', '', dataForm['salario_empleado'])
