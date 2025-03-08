@@ -9,6 +9,8 @@ from controllers.funciones_home import *
 PATH_URL = "public/empleados"
 
 
+# Rutas para las funciones de empleados
+# Ruta para registrar empleado
 @app.route('/registrar_empleado', methods=['GET', 'POST'])
 def viewFormEmpleado():
     if request.method == 'GET':
@@ -41,7 +43,7 @@ def viewFormEmpleado():
         return redirect(url_for('viewFormEmpleado'))
 
 
-
+# Ruta para listar empleados
 @app.route('/lista_empleados')
 def lista_empleados():
     empleados = sql_lista_empleadosBD()
@@ -49,8 +51,21 @@ def lista_empleados():
     return render_template('public/empleados/lista_empleados.html', empleados=empleados)
 
 
+@app.route('/detalles-empleado/<int:cc>', methods=['GET'])
+def detalles_empleado(cc):
+    # Obtener los datos del empleado usando la función
+    empleado = obtener_empleado_por_cc(cc)
+    
+    if empleado:
+        # Si el empleado existe, pasamos los datos a la plantilla
+        return render_template('detalles_empleado.html', empleado=empleado)
+    else:
+        # Si no se encuentra el empleado, mostramos una página de error
+        return render_template('error.html', mensaje="Empleado no encontrado")
 
-# Buscadon de empleados
+
+
+# Ruta para buscar empleados
 @app.route("/buscando-empleado", methods=['POST'])
 def viewBuscarEmpleadoBD():
     if 'busqueda' not in request.json:
@@ -78,13 +93,12 @@ def viewEditarEmpleado(id):
 
 
 # Recibir formulario para actulizar informacion de empleado
-@app.route('/actualizar-empleado', methods=['POST'])
-def actualizarEmpleado():
-    resultData = procesar_actualizacion_form(request)
-    if resultData:
-        return redirect(url_for('lista_empleados'))
+from flask import request, redirect, render_template
 
 
+
+
+#Rutas para las funciones de usuarios 
 @app.route("/lista-de-usuarios", methods=['GET'])
 def usuarios():
     if 'conectado' in session:

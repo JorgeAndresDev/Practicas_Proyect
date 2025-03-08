@@ -19,56 +19,82 @@
   </div>
 
   <div class="row justify-content-center mb-2">
-    <div class="col-md-10">
-      <form method="POST" action="/registrar_empleado">
-        <div class="form-group">
-            <label for="cc">CC (Cédula de Ciudadanía)</label>
-            <input type="number" class="form-control" id="cc" name="cc" required>
-        </div>
-        <div class="form-group">
-            <label for="nom">Nombre</label>
-            <input type="text" class="form-control" id="nom" name="nom" required>
-        </div>
-        <div class="form-group">
-            <label for="car">Cargo</label>
-            <input type="text" class="form-control" id="car" name="car" required>
-        </div>
-        <div class="form-group">
-            <label for="centro">Centro de Trabajo</label>
-            <input type="text" class="form-control" id="centro" name="centro" required>
-        </div>
-        <div class="form-group">
-            <label for="cash">CASH</label>
-            <input type="text" class="form-control" id="cash" name="cash" required>
-        </div>
-        <div class="form-group">
-            <label for="sac">SAC</label>
-            <input type="text" class="form-control" id="sac" name="sac" required>
-        </div>
-        <div class="form-group">
-            <label for="check">CHECK</label>
-            <input type="text" class="form-control" id="check" name="check" required>
-        </div>
-        <div class="form-group">
-            <label for="mod">MOD</label>
-            <input type="text" class="form-control" id="mod" name="mod" required>
-        </div>
-        <div class="form-group">
-            <label for="er">ER</label>
-            <input type="text" class="form-control" id="er" name="er" required>
-        </div>
-        <div class="form-group">
-            <label for="paradas">Paradas</label>
-            <input type="text" class="form-control" id="paradas" name="paradas" required>
-        </div>
-        <div class="form-group">
-            <label for="performance">Performance</label>
-            <input type="text" class="form-control" id="performance" name="performance" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Crear Empleado</button>
-    </form>
+    <div class="col-md-8">
+        <form method="POST" action="/registrar_empleado">
+            <div class="row">
+                <!-- Columna 1 -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="cc">CC (Cédula de Ciudadanía)</label>
+                        <input type="number" class="form-control" id="cc" name="cc" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nom">Nombre</label>
+                        <input type="text" class="form-control" id="nom" name="nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="car">Cargo</label>
+                        <select class="form-control" id="car" name="car" required>
+                            <option value="conductor">seleccionar..</option>
+                            <option value="conductor">Conductor</option>
+                            <option value="conductorRR">Conductor RR</option>
+                            <option value="auxiliarDistribucion">Auxiliar de Distribución</option>
+                            <option value="RR">RR</option>
+                            <option value="temporal">Temporal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cash">CASH</label>
+                        <input type="text" class="form-control" id="cash" name="cash" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="check">CHECK</label>
+                        <input type="number" class="form-control" id="porcentaje" name="porcentaje" min="0" max="100" step="1" required>
+                        <small class="form-text text-muted">Ingresa un valor entre 0 y 100</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="mod">MOD</label>
+                        <input type="number" class="form-control" id="porcentaje" name="porcentaje" min="0" max="100" step="1" required>
+                        <small class="form-text text-muted">Ingresa un valor entre 0 y 100</small>
+                    </div>
+                </div>
+
+                <!-- Columna 2 -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="centro">Centro de Trabajo</label>
+                        <select class="form-control" id="centro" name="centro" required>
+                            <option value="seleccionar">seleccionar..</option>
+                            <option value="Corozal">Corozal</option>
+                            <option value="Magangue">Magangue</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sac">SAC</label>
+                        <input type="text" class="form-control" id="sac" name="sac" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="er">ER</label>
+                        <input type="number" class="form-control" id="porcentaje" name="porcentaje" min="0" max="100" step="1" required>
+                        <small class="form-text text-muted">Ingresa un valor entre 0 y 100</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="paradas">Paradas</label>
+                        <input type="text" class="form-control" id="paradas" name="paradas" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="performance">Performance</label>
+                        <input type="number" class="form-control" id="porcentaje" name="porcentaje" min="0" max="100" step="1" required>
+                        <small class="form-text text-muted">Ingresa un valor entre 0 y 100</small>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Crear Empleado</button>
+        </form>
     </div>
-  </div>
+</div>
+
+  
 </div>
 {% endblock %} {% block customJS %}
 <script src="{{ url_for('static', filename ='assets/customJS/file.js') }}"></script>

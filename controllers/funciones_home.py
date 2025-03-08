@@ -17,17 +17,17 @@ import openpyxl  # Para generar el excel
 # biblioteca o modulo send_file para forzar la descarga
 from flask import send_file
 
-
+# Funciones para los empleados
 # Función para crear un nuevo empleado
-def registrar_empleado(cc, nom, car, centro, cash, sac, check, mod, er, paradas, performance):
+def registrar_empleado(CC, NOM, CAR, CENTRO, CASH, SAC, CHECK, MOD, ER, PARADAS, PERFORMANCE):
     try:
         # Crear conexión a la base de datos
         conexion = connectionBD()
         cursor = conexion.cursor(dictionary=True)
         
         # Verificar si el empleado ya existe por cédula
-        sql_check = "SELECT * FROM tbl_empleados WHERE cc = %s"  # Cambiado a tbl_empleados
-        cursor.execute(sql_check, (cc,))
+        sql_check = "SELECT * FROM app_empresa_bd.tbl_empleados WHERE CC = %s"
+        cursor.execute(sql_check, (CC,))
         empleado_existente = cursor.fetchone()
         
         if empleado_existente:
@@ -36,11 +36,11 @@ def registrar_empleado(cc, nom, car, centro, cash, sac, check, mod, er, paradas,
         
         # Insertar el empleado en la base de datos
         sql_insert = """
-            INSERT INTO tbl_empleados (cc, nom, car, centro, cash, sac, `check`, mod, er, paradas, performance) 
+            INSERT INTO tbl_empleados (CC, NOM, CAR, CENTRO, CASH, SAC, `CHECK`, `MOD`, `ER`, PARADAS, PERFORMANCE) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """  # Cambiado a tbl_empleados
+        """
         
-        cursor.execute(sql_insert, (cc, nom, car, centro, cash, sac, check, mod, er, paradas, performance))
+        cursor.execute(sql_insert, (CC, NOM, CAR, CENTRO, CASH, SAC, CHECK, MOD, ER, PARADAS, PERFORMANCE))
         conexion.commit()
         
         # Cerrar la conexión
@@ -54,61 +54,32 @@ def registrar_empleado(cc, nom, car, centro, cash, sac, check, mod, er, paradas,
         # En caso de error, retornar False y el mensaje de error
         return False, f"Error al registrar empleado: {str(e)}"
 
-def procesar_form_empleado(dataForm, foto_perfil):
-    # Formateando Salario
-    salario_sin_puntos = re.sub('[^0-9]+', '', dataForm['salario_empleado'])
-    # convertir salario a INT
-    salario_entero = int(salario_sin_puntos)
 
-    result_foto_perfil = procesar_imagen_perfil(foto_perfil)
+def obtener_empleado_por_cc(cc):
     try:
+        # Establecer la conexión con la base de datos
         with connectionBD() as conexion_MySQLdb:
             with conexion_MySQLdb.cursor(dictionary=True) as cursor:
-
-                sql = "INSERT INTO tbl_empleados (nombre_empleado, apellido_empleado, sexo_empleado, telefono_empleado, email_empleado, profesion_empleado, foto_empleado, salario_empleado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-
-                # Creando una tupla con los valores del INSERT
-                valores = (dataForm['nombre_empleado'], dataForm['apellido_empleado'], dataForm['sexo_empleado'],
-                           dataForm['telefono_empleado'], dataForm['email_empleado'], dataForm['profesion_empleado'], result_foto_perfil, salario_entero)
-                cursor.execute(sql, valores)
-
-                conexion_MySQLdb.commit()
-                resultado_insert = cursor.rowcount
-                return resultado_insert
-
+                # Consulta SQL para obtener los datos del empleado según su cédula (CC)
+                querySQL = "SELECT * FROM tbl_empleados WHERE cc = %s"
+                cursor.execute(querySQL, (cc,))
+                
+                # Obtener el primer resultado (empleado)
+                empleado = cursor.fetchone()
+                
+                # Si se encuentra un empleado, lo devolvemos, si no, devolvemos None
+                if empleado:
+                    return empleado
+                else:
+                    # Retorna None si no se encuentra el empleado
+                    print(f"No se encontró ningún empleado con CC: {cc}")
+                    return None
+                
     except Exception as e:
-        return f'Se produjo un error en procesar_form_empleado: {str(e)}'
+        # Capturar cualquier excepción y mostrar el mensaje de error
+        print(f"Ocurrió un error en obtener_empleado_por_cc: {e}")
+        return None
 
-
-def procesar_imagen_perfil(foto):
-    try:
-        # Nombre original del archivo
-        filename = secure_filename(foto.filename)
-        extension = os.path.splitext(filename)[1]
-
-        # Creando un string de 50 caracteres
-        nuevoNameFile = (uuid.uuid4().hex + uuid.uuid4().hex)[:100]
-        nombreFile = nuevoNameFile + extension
-
-        # Construir la ruta completa de subida del archivo
-        basepath = os.path.abspath(os.path.dirname(__file__))
-        upload_dir = os.path.join(basepath, f'../static/fotos_empleados/')
-
-        # Validar si existe la ruta y crearla si no existe
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-            # Dando permiso a la carpeta
-            os.chmod(upload_dir, 0o755)
-
-        # Construir la ruta completa de subida del archivo
-        upload_path = os.path.join(upload_dir, nombreFile)
-        foto.save(upload_path)
-
-        return nombreFile
-
-    except Exception as e:
-        print("Error al procesar archivo:", e)
-        return []
 
 
 # Lista de Empleados
@@ -139,87 +110,6 @@ def sql_lista_empleadosBD():
             connection.close()
 
 
-def empleadosReporte():
-    try:
-        with connectionBD() as conexion_MySQLdb:
-            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
-                querySQL = ("""
-                    SELECT 
-                        e.cc,
-                        e.nombre_empleado, 
-                        e.apellido_empleado,
-                        e.salario_empleado,
-                        e.email_empleado,
-                        e.telefono_empleado,
-                        e.profesion_empleado,
-                        DATE_FORMAT(e.fecha_registro, '%d de %b %Y %h:%i %p') AS fecha_registro,
-                        CASE
-                            WHEN e.sexo_empleado = 1 THEN 'Masculino'
-                            ELSE 'Femenino'
-                        END AS sexo_empleado
-                    FROM tbl_empleados AS e
-                    ORDER BY e.cc DESC
-                    """)
-                cursor.execute(querySQL,)
-                empleadosBD = cursor.fetchall()
-        return empleadosBD
-    except Exception as e:
-        print(
-            f"Errro en la función empleadosReporte: {e}")
-        return None
-
-
-def generarReporteExcel():
-    dataEmpleados = empleadosReporte()
-    wb = openpyxl.Workbook()
-    hoja = wb.active
-
-    # Agregar la fila de encabezado con los títulos
-    cabeceraExcel = ("Nombre", "Apellido", "Sexo",
-                     "Telefono", "Email", "Profesión", "Salario", "Fecha de Ingreso")
-
-    hoja.append(cabeceraExcel)
-
-    # Formato para números en moneda colombiana y sin decimales
-    formato_moneda_colombiana = '#,##0'
-
-    # Agregar los registros a la hoja
-    for registro in dataEmpleados:
-        nombre_empleado = registro['nombre_empleado']
-        apellido_empleado = registro['apellido_empleado']
-        sexo_empleado = registro['sexo_empleado']
-        telefono_empleado = registro['telefono_empleado']
-        email_empleado = registro['email_empleado']
-        profesion_empleado = registro['profesion_empleado']
-        salario_empleado = registro['salario_empleado']
-        fecha_registro = registro['fecha_registro']
-
-        # Agregar los valores a la hoja
-        hoja.append((nombre_empleado, apellido_empleado, sexo_empleado, telefono_empleado, email_empleado, profesion_empleado,
-                     salario_empleado, fecha_registro))
-
-        # Itera a través de las filas y aplica el formato a la columna G
-        for fila_num in range(2, hoja.max_row + 1):
-            columna = 7  # Columna G
-            celda = hoja.cell(row=fila_num, column=columna)
-            celda.number_format = formato_moneda_colombiana
-
-    fecha_actual = datetime.datetime.now()
-    archivoExcel = f"Reporte_empleados_{fecha_actual.strftime('%Y_%m_%d')}.xlsx"
-    carpeta_descarga = "../static/downloads-excel"
-    ruta_descarga = os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), carpeta_descarga)
-
-    if not os.path.exists(ruta_descarga):
-        os.makedirs(ruta_descarga)
-        # Dando permisos a la carpeta
-        os.chmod(ruta_descarga, 0o755)
-
-    ruta_archivo = os.path.join(ruta_descarga, archivoExcel)
-    wb.save(ruta_archivo)
-
-    # Enviar el archivo como respuesta HTTP
-    return send_file(ruta_archivo, as_attachment=True)
 
 
 def buscarEmpleadoBD(search):
@@ -276,68 +166,7 @@ def buscarEmpleadoUnico(id):
         return []
 
 
-def procesar_actualizacion_form(data):
-    try:
-        with connectionBD() as conexion_MySQLdb:
-            with conexion_MySQLdb.cursor(dictionary=True) as cursor:
-                nombre_empleado = data.form['nombre_empleado']
-                apellido_empleado = data.form['apellido_empleado']
-                sexo_empleado = data.form['sexo_empleado']
-                telefono_empleado = data.form['telefono_empleado']
-                email_empleado = data.form['email_empleado']
-                profesion_empleado = data.form['profesion_empleado']
-
-                salario_sin_puntos = re.sub(
-                    '[^0-9]+', '', data.form['salario_empleado'])
-                salario_empleado = int(salario_sin_puntos)
-                id_empleado = data.form['cc']
-
-                if data.files['foto_empleado']:
-                    file = data.files['foto_empleado']
-                    fotoForm = procesar_imagen_perfil(file)
-
-                    querySQL = """
-                        UPDATE tbl_empleados
-                        SET 
-                            nombre_empleado = %s,
-                            apellido_empleado = %s,
-                            sexo_empleado = %s,
-                            telefono_empleado = %s,
-                            email_empleado = %s,
-                            profesion_empleado = %s,
-                            salario_empleado = %s,
-                            foto_empleado = %s
-                        WHERE cc = %s
-                    """
-                    values = (nombre_empleado, apellido_empleado, sexo_empleado,
-                              telefono_empleado, email_empleado, profesion_empleado,
-                              salario_empleado, fotoForm, cc)
-                else:
-                    querySQL = """
-                        UPDATE tbl_empleados
-                        SET 
-                            nombre_empleado = %s,
-                            apellido_empleado = %s,
-                            sexo_empleado = %s,
-                            telefono_empleado = %s,
-                            email_empleado = %s,
-                            profesion_empleado = %s,
-                            salario_empleado = %s
-                        WHERE cc = %s
-                    """
-                    values = (nombre_empleado, apellido_empleado, sexo_empleado,
-                              telefono_empleado, email_empleado, profesion_empleado,
-                              salario_empleado, cc)
-
-                cursor.execute(querySQL, values)
-                conexion_MySQLdb.commit()
-
-        return cursor.rowcount or []
-    except Exception as e:
-        print(f"Ocurrió un error en procesar_actualizacion_form: {e}")
-        return None
-
-
+# Funciones para  los usuarios 
 # Lista de Usuarios creados
 def lista_usuariosBD():
     try:
