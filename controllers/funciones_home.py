@@ -19,7 +19,7 @@ from flask import send_file
 
 # Funciones para los empleados
 # Función para crear un nuevo empleado
-def registrar_empleado(CC, NOM, CAR, CENTRO, CASH, SAC, CHECK, MOD, ER, PARADAS, PERFORMANCE):
+def registrar_empleado(CC, NOM, CAR, CENTRO):
     try:
         # Crear conexión a la base de datos
         conexion = connectionBD()
@@ -31,28 +31,25 @@ def registrar_empleado(CC, NOM, CAR, CENTRO, CASH, SAC, CHECK, MOD, ER, PARADAS,
         empleado_existente = cursor.fetchone()
         
         if empleado_existente:
-            # Si el empleado ya existe, retornar False y un mensaje
             return False, "Ya existe un empleado registrado con esta cédula"
         
-        # Insertar el empleado en la base de datos
+        # Insertar el empleado con valores por defecto para los demás campos
         sql_insert = """
-            INSERT INTO tbl_empleados (CC, NOM, CAR, CENTRO, CASH, SAC, `CHECK`, `MOD`, `ER`, PARADAS, PERFORMANCE) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO tbl_empleados (CC, NOM, CAR, CENTRO, CASH, SAC, `CHECK`, `MOD`, `ER`, PARADAS) 
+            VALUES (%s, %s, %s, %s, 0, 0, 0, 0, 0, 0)
         """
         
-        cursor.execute(sql_insert, (CC, NOM, CAR, CENTRO, CASH, SAC, CHECK, MOD, ER, PARADAS, PERFORMANCE))
+        cursor.execute(sql_insert, (CC, NOM, CAR, CENTRO))
         conexion.commit()
         
-        # Cerrar la conexión
         cursor.close()
         conexion.close()
         
-        # Retornar éxito y mensaje
         return True, "Empleado registrado correctamente"
         
     except Exception as e:
-        # En caso de error, retornar False y el mensaje de error
         return False, f"Error al registrar empleado: {str(e)}"
+
 
 
 def obtener_empleado_por_cc(cc):

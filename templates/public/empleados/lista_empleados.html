@@ -29,12 +29,14 @@
         cellspacing="0" 
         width="100%">
         <thead>
-          <tr>
+          <tr >
             <th>CC</th>
             <th>Nombre</th>
             <th>Cargo</th>
             <th>Centro</th>
-            <th>Acciones</th>
+            <th>Ver</th>
+            <th>Actualizar</th>
+            <th>Eliminar</th>
           </tr>
         </thead>
         <tbody>
@@ -47,26 +49,26 @@
               <td>{{ empleado.CENTRO }}</td>
               <td>
                 <div class="btn-group gap-1" role="group">
-                  <a
-                    href="/detalles-empleado/{{ empleado.CC }}"
-                    class="btn btn-info btn-sm rounded-pill"
-                    title="Ver detalles">
-                    <i class="bi bi-eye"></i> Ver detalles
+                  <a href="/detalles-empleado/{{ empleado.CC }}" class="btn btn-info btn-lg rounded-pill" title="Ver detalles">
+                    <i class="bi bi-eye"></i> 
                   </a>
-
+              <td class="d-flex justify-content-center">
                   <a
                     href="{{ url_for('viewEditarEmpleado', id=empleado.CC) }}"
-                    class="btn btn-success btn-sm rounded-pill"
+                    class="btn btn-success btn-lg rounded-pill"
                     title="Actualizar Registro">
-                    <i class="bi bi-arrow-clockwise"></i> Actualizar
+                    <i class="bi bi-arrow-clockwise"></i> 
                   </a>
+              </td>
+              <td>  
                   <a
                     href="{{ url_for('eliminar_empleado', cc=empleado.CC) }}"
-                    class="btn btn-danger btn-sm rounded-pill"
+                    class="btn btn-danger btn-lg rounded-pill"
                     title="Eliminar empleado"
                     onclick="return confirm('¿Estás seguro de eliminar al empleado {{ empleado.NOM }}?');">
-                    <i class="bi bi-trash3"   id="btn-delete"></i> Eliminar
+                    <i class="bi bi-trash3"   id="btn-delete"></i>
                   </a>
+                </td>  
                   </a>
                 </div>
               </td>

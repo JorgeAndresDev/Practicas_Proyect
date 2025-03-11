@@ -7,17 +7,15 @@
 {% block customCSS %}
 <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/file.css') }}" />
 <style>
-  /* Estilo para que la tarjeta de indicadores ocupe todo el alto */
   .card-full-height {
     height: 100%;
     display: flex;
     flex-direction: column;
   }
-
-  /* Estilo para alinear los nombres de los indicadores a la derecha */
   .card-indicador {
-    text-align: right;
-    padding-right: 20px; /* Añade un poco de espacio a la derecha */
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2rem;
   }
 </style>
 {% endblock %}
@@ -27,128 +25,25 @@
 <div class="container mt-4">
   <div class="row">
     <div class="col-md-12 text-center">
-      <h2 class="mb-4">
-        <a href="/lista_empleados" class="text-decoration-none">
-          <i class="bi bi-arrow-left-circle"></i>
-        </a>
-        DETALLE DEL EMPLEADO
-      </h2>
-      <hr class="mb-4">
+      <h1>Detalles del Empleado</h1>
+        
+        {% if empleado %}
+            <p><strong>Cédula:</strong> {{ empleado.CC }}</p>
+            <p><strong>Nombre:</strong> {{ empleado.nom }}</p>
+            <p><strong>Cargo:</strong> {{ empleado.car }}</p>
+            <p><strong>Centro de Trabajo:</strong> {{ empleado.centro }}</p>
+            <p><strong>CASH:</strong> {{ empleado.cash }}</p>
+            <p><strong>SAC:</strong> {{ empleado.sac }}</p>
+            <p><strong>CHECK:</strong> {{ empleado.check }}</p>
+            <p><strong>MOD:</strong> {{ empleado.mod }}</p>
+            <p><strong>ER:</strong> {{ empleado.er }}</p>
+            <p><strong>Paradas:</strong> {{ empleado.paradas }}</p>
+            <p><strong>Performance:</strong> {{ empleado.performance }}</p>
+        {% else %}
+            <p>El empleado no existe.</p>
+        {% endif %}
+
+        <a href="{{ url_for('lista_empleados') }}" class="btn btn-primary">Volver a la lista</a>
     </div>
-  </div>
-
-  {% if detalle_empleado %}
-  <div class="row">
-    <!-- Primera Columna -->
-    <div class="col-md-6">
-      <!-- Tarjeta 1: Imagen del Empleado -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-info text-white">
-          <h5 class="card-title mb-0">IMAGEN DEL EMPLEADO</h5>
-        </div>
-        <div class="card-body text-center">
-          <img
-            src="/static/fotos_empleados/{{ detalle_empleado.foto_empleado }}"
-            alt="imagen-empleado"
-            class="img-fluid rounded"
-            style="max-width: 300px;"
-          />
-        </div>
-      </div>
-
-      <!-- Tarjeta 2: Información Profesional -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-success text-white">
-          <h5 class="card-title mb-0">INFORMACIÓN PROFESIONAL</h5>
-        </div>
-        <div class="card-body">
-          <p><strong>Email:</strong> {{ detalle_empleado.email_empleado }}</p>
-          <p><strong>Profesión:</strong> {{ detalle_empleado.profesion_empleado }}</p>
-          <p><strong>Salario:</strong> $ {{ '{:,.0f}'.format(detalle_empleado.salario_empleado).replace(',', '.') }}</p>
-        </div>
-      </div>
-
-      <!-- Tarjeta 3: Información Personal -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-          <h5 class="card-title mb-0">INFORMACIÓN PERSONAL</h5>
-        </div>
-        <div class="card-body">
-          <p><strong>Nombre:</strong> {{ detalle_empleado.nombre_empleado }}</p>
-          <p><strong>Apellido:</strong> {{ detalle_empleado.apellido_empleado }}</p>
-          <p><strong>Sexo:</strong> {{ detalle_empleado.sexo_empleado }}</p>
-          <p><strong>Teléfono:</strong> {{ detalle_empleado.telefono_empleado }}</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Segunda Columna: Indicadores -->
-    <div class="col-md-6">
-      <div class="card shadow-sm card-full-height">
-        <div class="card-header bg-warning text-white">
-          <h5 class="card-title mb-0">INDICADORES</h5>
-        </div>
-        <div class="card-body">
-          <div class="row h-100">
-            <!-- Fila 1 -->
-            <div class="col-md-6 mb-3">
-              <div class="card bg-light h-100">
-                <div class="card-body card-indicador">
-                  <h5 class="card-title">CASHLESS</h5>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6 mb-3">
-              <div class="card bg-light h-100">
-                <div class="card-body card-indicador">
-                  <h5 class="card-title">QUEJAS</h5>
-                </div>
-              </div>
-            </div>
-
-            <!-- Fila 2 -->
-            <div class="col-md-6 mb-3">
-              <div class="card bg-light h-100">
-                <div class="card-body card-indicador">
-                  <h5 class="card-title">CHECKLIST</h5>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6 mb-3">
-              <div class="card bg-light h-100">
-                <div class="card-body card-indicador">
-                  <h5 class="card-title">MODULACION</h5>
-                </div>
-              </div>
-            </div>
-
-            <!-- Fila 3 -->
-            <div class="col-md-6 mb-3">
-              <div class="card bg-light h-100">
-                <div class="card-body card-indicador">
-                  <h5 class="card-title">ENTREGAS EN RANGO</h5>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6 mb-3">
-              <div class="card bg-light h-100">
-                <div class="card-body card-indicador">
-                  <h5 class="card-title">PNP</h5>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  {% else %}
-  <div class="row">
-    <div class="col-md-12 text-center">
-      <h3 class="text-danger">No existe el Empleado 😭</h3>
-      <hr>
-    </div>
-  </div>
-  {% endif %}
 </div>
 {% endblock %}

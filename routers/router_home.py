@@ -3,6 +3,8 @@ from flask import render_template, request, flash, redirect, url_for, session,  
 from mysql.connector.errors import Error
 
 
+
+
 # Importando cenexión a BD
 from controllers.funciones_home import *
 
@@ -22,25 +24,19 @@ def viewFormEmpleado():
         nom = request.form.get('nom')
         car = request.form.get('car')
         centro = request.form.get('centro')
-        cash = request.form.get('cash')
-        sac = request.form.get('sac')
-        check = request.form.get('check')
-        mod = request.form.get('mod')
-        er = request.form.get('er')
-        paradas = request.form.get('paradas')
-        performance = request.form.get('performance')
         
         # Llamar a la función para crear el empleado
-        resultado, mensaje = registrar_empleado(cc, nom, car, centro, cash, sac, check, mod, er, paradas, performance)
+        resultado, mensaje = registrar_empleado(cc, nom, car, centro)
         
         # Mostrar mensaje de éxito o error
         if resultado:
-            flash(mensaje, 'success')  # Mensaje de éxito
+            flash(mensaje, 'success')
         else:
-            flash(mensaje, 'error')  # Mensaje de error
+            flash(mensaje, 'error')
         
-        # Redirigir al formulario de registro
         return redirect(url_for('viewFormEmpleado'))
+
+
 
 
 # Ruta para listar empleados

@@ -1,6 +1,6 @@
 {% extends 'public/base_cpanel.html' %}
 <!--Cambiando el title-->
-{% block title %}Distribución| Registrar Empleado{% endblock %}
+{% block title %}Distribución | Registrar Empleado{% endblock %}
 <!---->
 {% block customCSS %}
 <link
@@ -10,7 +10,7 @@
 
 <!--Inicio del block-->
 {% block body %}
-<div class="card " style="border-radius: 0px !important">
+<div class="card h-100" style="border-radius: 0px !important">
   <div class="row justify-content-center mb-2">
     <div class="col-md-12">
       <h3 class="text-center mt-5 mb-3">REGISTRAR NUEVO EMPLEADO</h3>
@@ -18,9 +18,9 @@
     </div>
   </div>
 
-  <div class="row justify-content-center mb-2">
-    <div class="col-md-8">
-        <form method="POST" action="/registrar_empleado">
+  <div class="row justify-content-center align-items-center h-100">
+    <div class="col-md-8 d-flex flex-column">
+        <form method="POST" action="/registrar_empleado" class="w-100">
             <div class="row">
                 <!-- Columna 1 -->
                 <div class="col-md-6">
@@ -32,10 +32,22 @@
                         <label for="nom">Nombre</label>
                         <input type="text" class="form-control" id="nom" name="nom" required>
                     </div>
+                </div>
+        
+                <!-- Columna 2 -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="centro">Centro de Trabajo</label>
+                        <select class="form-control" id="centro" name="centro" required>
+                            <option value="seleccionar">Seleccionar...</option>
+                            <option value="Corozal">Corozal</option>
+                            <option value="Magangue">Magangue</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="car">Cargo</label>
                         <select class="form-control" id="car" name="car" required>
-                            <option value="conductor">seleccionar..</option>
+                            <option value="seleccionar">Seleccionar...</option>
                             <option value="conductor">Conductor</option>
                             <option value="conductorRR">Conductor RR</option>
                             <option value="auxiliarDistribucion">Auxiliar de Distribución</option>
@@ -43,59 +55,19 @@
                             <option value="temporal">Temporal</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="cash">CASH</label>
-                        <input type="text" class="form-control" id="cash" name="cash" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="check">CHECK</label>
-                        <input type="number" class="form-control" id="porcentaje" name="porcentaje" min="0" max="100" step="1" required>
-                        <small class="form-text text-muted">Ingresa un valor entre 0 y 100</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="mod">MOD</label>
-                        <input type="number" class="form-control" id="porcentaje" name="porcentaje" min="0" max="100" step="1" required>
-                        <small class="form-text text-muted">Ingresa un valor entre 0 y 100</small>
-                    </div>
-                </div>
-
-                <!-- Columna 2 -->
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="centro">Centro de Trabajo</label>
-                        <select class="form-control" id="centro" name="centro" required>
-                            <option value="seleccionar">seleccionar..</option>
-                            <option value="Corozal">Corozal</option>
-                            <option value="Magangue">Magangue</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="sac">SAC</label>
-                        <input type="text" class="form-control" id="sac" name="sac" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="er">ER</label>
-                        <input type="number" class="form-control" id="porcentaje" name="porcentaje" min="0" max="100" step="1" required>
-                        <small class="form-text text-muted">Ingresa un valor entre 0 y 100</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="paradas">Paradas</label>
-                        <input type="text" class="form-control" id="paradas" name="paradas" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="performance">Performance</label>
-                        <input type="number" class="form-control" id="porcentaje" name="porcentaje" min="0" max="100" step="1" required>
-                        <small class="form-text text-muted">Ingresa un valor entre 0 y 100</small>
-                    </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary mt-2">Crear Empleado</button>
-        </form>
+        
+            <!-- Botón centrado -->
+            <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-primary">Crear Empleado</button>
+            </div>
+        </form>              
     </div>
+  </div>
 </div>
+{% endblock %}
 
-  
-</div>
-{% endblock %} {% block customJS %}
+{% block customJS %}
 <script src="{{ url_for('static', filename ='assets/customJS/file.js') }}"></script>
 {% endblock %}
