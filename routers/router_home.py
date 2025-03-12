@@ -62,18 +62,32 @@ def detalles_empleado(cc):
 
 
 # Ruta para buscar empleados
-@app.route("/buscando-empleado", methods=['POST'])
-def viewBuscarEmpleadoBD():
-    if 'busqueda' not in request.json:
-        return jsonify({'error': 'El campo "busqueda" es requerido'}), 400
+@app.route('/buscar-empleado', methods=['POST'])
+def buscarEmpleado():
+    try:
+        # Obtener el término de búsqueda del formulario
+        search_term = request.form.get('search', '')
+        
+        # Si el término de búsqueda está vacío, redireccionar a la página principal
+        if not search_term:
+            return redirect(url_for('index'))
+        
+        # Realizar la búsqueda
+        resultados = buscarEmpleadoBD(search_term)
+        
+        # Renderizar la plantilla con los resultados
+        return render_template('empleados.html', empleados=resultados, search=search_term)
     
-    search = request.json['busqueda']
-    resultadoBusqueda = buscarEmpleadoBD(search)
+    except Exception as e:
+        # En caso de error, mostrar mensaje y redireccionar
+        flash(f'Error al buscar empleado: {str(e)}', 'error')
+        return redirect(url_for('index'))
     
-    if resultadoBusqueda:
-        return render_template(f'{PATH_URL}/resultado_busqueda_empleado.html', dataBusqueda=resultadoBusqueda)
-    else:
-        return jsonify({'fin': 0})  # No se encontraron resultados
+
+
+
+
+
 @app.route("/editar-empleado/<int:id>", methods=['GET'])
 def viewEditarEmpleado(id):
     if 'conectado' in session:
@@ -91,6 +105,21 @@ def viewEditarEmpleado(id):
 # Recibir formulario para actulizar informacion de empleado
 from flask import request, redirect, render_template
 
+
+@app.route('/buscar-empleado-ajax', methods=['POST'])
+def buscarEmpleadoAjax():
+    try:
+        search_term = request.values.get('search', '').strip()
+        
+        # Si el término está vacío, en lugar de redirigir, devolver lista vacía
+        if not search_term:
+            return jsonify([])
+        
+        resultados = buscarEmpleadoBD(search_term)
+        return jsonify(resultados)  # Enviar resultados en formato JSON
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 
@@ -128,13 +157,6 @@ def eliminar_empleado(cc):
     
 
 
-@app.route("/descargar-informe-empleados/", methods=['GET'])
-def reporteBD():
-    if 'conectado' in session:
-        return generarReporteExcel()
-    else:
-        flash('primero debes iniciar sesión.', 'error')
-        return redirect(url_for('inicio'))
-    
+
 
     
