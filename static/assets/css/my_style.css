@@ -52,7 +52,7 @@ body {
     border: 5px solid white;
   }
   50% {
-    border: 25px solid #e83023;
+    border: 25px solid  #25D366;
   }
   100% {
     border: 5px solid white;
@@ -61,13 +61,13 @@ body {
 
 @keyframes borderScale {
   0% {
-    border: 5px solid rgb(255, 38, 0);
+    border: 5px solid  #25D366;
   }
   50% {
-    border: 25px solid #ff0000;
+    border: 25px solid  #25D366;
   }
   100% {
-    border: 5px solid rgb(255, 38, 9);
+    border: 5px solid  #25D366;
   }
 }
 /*Fin del loader*/
@@ -128,8 +128,8 @@ tbody tr:hover {
 
 .borderCheckbox {
   cursor: pointer;
-  border-color: #db0a0a;
-  box-shadow: 0 2px 4px 0 #f12004;
+  border-color:  #25D366;
+  box-shadow: 0 2px 4px 0  #25D366;
 }
 .pagination {
   justify-content: center;
@@ -148,7 +148,7 @@ tbody tr:hover {
 }
 
 .pesos {
-  background-color: #e88923;
+  background-color:  #25D366;
   color: #fff;
   padding: 2px;
   border-radius: 10%;
@@ -200,7 +200,7 @@ tbody tr:hover {
   text-transform: uppercase !important;
 }
 .btn-primary {
-  background-color: #DD1C24 !important;
+  background-color: #25D366 !important;
   border: none !important;
 }
 .btn-close {
@@ -241,7 +241,7 @@ tbody tr:hover {
   box-shadow: 10px 5px 5px rgb(112, 112, 112);
 }
 .darky{
-  background-color: #182C44;
+  background-color: #000000;
 }
 a{
   color: #ffff;

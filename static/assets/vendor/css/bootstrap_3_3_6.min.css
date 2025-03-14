@@ -5159,15 +5159,15 @@ a.thumbnail:hover {
   color: inherit;
 }
 .alert-success {
-  color: #3c763d;
+  color: #25D366;
   background-color: #dff0d8;
   border-color: #d6e9c6;
 }
 .alert-success hr {
-  border-top-color: #c9e2b3;
+  border-top-color: #25D366;
 }
 .alert-success .alert-link {
-  color: #2b542c;
+  color: #25D366;
 }
 .alert-info {
   color: #31708f;
@@ -6783,7 +6783,7 @@ button.close {
   margin: 1px;
   text-indent: -999px;
   cursor: pointer;
-  background-color: #000\9;
+  background-color: #0000;
   background-color: rgba(0, 0, 0, 0);
   border: 1px solid #fff;
   border-radius: 10px;

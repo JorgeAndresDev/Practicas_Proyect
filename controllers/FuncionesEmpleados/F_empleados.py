@@ -1,6 +1,4 @@
-
-
-from conexion.conexionBD import connectionBD
+from conexion.conexionBD import connectionBD  # Conexión a BD
 
 
 def registrar_empleado(CC, NOM, CAR, CENTRO):
