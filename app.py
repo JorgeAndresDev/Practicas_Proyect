@@ -1,4 +1,12 @@
 from flask import Flask
+# Al inicio de tu archivo principal (app.py o similar)
+from controllers.FuncionesEmpleados.F_empleados import (
+    registrar_empleado,
+    sql_lista_empleadosBD,
+    obtener_empleado_por_cc,
+    buscarEmpleadoBD,
+    buscarEmpleadoUnico
+)
 
 app = Flask(__name__)
 application = app

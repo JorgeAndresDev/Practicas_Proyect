@@ -6,7 +6,9 @@ from mysql.connector.errors import Error
 
 
 # Importando cenexión a BD
-from controllers.funciones_home import *
+from controllers.FuncionesEmpleados.F_empleados import buscarEmpleadoBD, buscarEmpleadoUnico, obtener_empleado_por_cc, registrar_empleado, sql_lista_empleadosBD
+from controllers.FuncionesUsuarios.funciones_home import eliminarUsuario, lista_usuariosBD, sql_eliminar_empleado
+from controllers.FuncionesLogin import *
 
 PATH_URL = "public/empleados"
 

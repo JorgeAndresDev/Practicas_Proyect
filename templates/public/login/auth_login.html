@@ -25,6 +25,7 @@
                 class="form-control"
                 name="email_user"
                 placeholder="Escribe tu email"
+                id="pass_user"
                 autofocus
                 required />
             </div>
@@ -40,12 +41,12 @@
                   type="password"
                   class="form-control"
                   name="pass_user"
-                  id="pass_user"
+                  id="passuser"
                   placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
                   aria-describedby="password"
                   required />
                 <span class="input-group-text cursor-pointer">
-                  <i class="bx bx-hide"></i>
+                  <i class="bx bx-hide" id="togglePasswordIcon"></i>
                 </span>
               </div>
             </div>
@@ -67,3 +68,21 @@
     </div>
   </div>
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const passwordInput = document.getElementById('passuser');
+    const toggleIcon = document.getElementById('togglePasswordIcon');
+
+    toggleIcon.addEventListener('click', function () {
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('bx-hide');
+        toggleIcon.classList.add('bx-show');
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('bx-show');
+        toggleIcon.classList.add('bx-hide');
+      }
+    });
+  });
+</script>
