@@ -1,0 +1,73 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+{% block title %}Distribución | UpdateDB Empleado{% endblock %}
+<!---->
+{% block customCSS %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+{% endblock %}
+
+<!--Inicio del block-->
+{% block body %}
+<div class="card h-100" style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">UpdateDB</h3>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row justify-content-center align-items-center h-100">
+    <div class="col-md-8 d-flex flex-column">
+        <form method="POST" action="/UpdateDB_empleado" class="w-100">
+            <div class="row">
+                <!-- Columna 1 -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="cc">CC (Cédula de Ciudadanía)</label>
+                        <input type="number" class="form-control" id="cc" name="cc" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nom">Nombre</label>
+                        <input type="text" class="form-control" id="nom" name="nom" required>
+                    </div>
+                </div>
+        
+                <!-- Columna 2 -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="centro">Centro de Trabajo</label>
+                        <select class="form-control" id="centro" name="centro" required>
+                            <option value="seleccionar">Seleccionar...</option>
+                            <option value="Corozal">Corozal</option>
+                            <option value="Magangue">Magangue</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="car">Cargo</label>
+                        <select class="form-control" id="car" name="car" required>
+                            <option value="seleccionar">Seleccionar...</option>
+                            <option value="conductor">Conductor</option>
+                            <option value="conductorRR">Conductor RR</option>
+                            <option value="auxiliarDistribucion">Auxiliar de Distribución</option>
+                            <option value="RR">RR</option>
+                            <option value="temporal">Temporal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Botón centrado -->
+            <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-primary">Crear Empleado</button>
+            </div>
+        </form>              
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block customJS %}
+<script src="{{ url_for('static', filename ='assets/customJS/file.js') }}"></script>
+{% endblock %}

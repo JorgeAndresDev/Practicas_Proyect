@@ -1,4 +1,4 @@
-<aside id="layout-menu" class="layout-menu menu-vertical menu darky">
+<aside id="layout-menu" class="layout-menu menu-vertical bg-dark text-white min-vh-100 p-3 d-flex flex-column">
   <div class="app-brand demo">
     <a href="{{ url_for('inicio') }}" class="app-brand-link">
       <span class="app-brand-logo demo">
@@ -15,53 +15,42 @@
     </a>
   </div>
 
-  <div class="menu-inner-shadow"></div>
-  <ul class="menu-inner py-5">
-    <li class="menu-item {% if request.path == '/registrar_empleado' %} active {% endif %}">
-      <a href="/registrar_empleado" class="menu-link">
-        <i class="menu-icon bi bi-person-bounding-box"></i>
-        <div data-i18n="Basic">Registrar Empleado</div>
+  <!-- Menú en columna -->
+  <ul class="nav flex-column flex-grow-1">
+    <li class="nav-item {% if request.path == '/registrar_empleado' %} active {% endif %}">
+      <a href="/registrar_empleado" class="nav-link text-white">
+        <i class="bi bi-person-bounding-box me-2"></i> Registrar Empleado
       </a>
     </li>
-    <li
-      class="menu-item {% if request.path == '/lista_empleados' %} active{% endif %}">
-      <a href="/lista_empleados" class="menu-link">
-        <i class="menu-icon bi bi-person-lines-fill"></i>
-        <div data-i18n="Boxicons">Lista de Empleados</div>
+    <li class="nav-item {% if request.path == '/lista_empleados' %} active {% endif %}">
+      <a href="/lista_empleados" class="nav-link text-white">
+        <i class="bi bi-person-lines-fill me-2"></i> Lista de Empleados
       </a>
     </li>
-    <li
-      class="menu-item {% if request.path == '/descargar-informe-empleados' %} active {% endif %}">
-      <a href="/descargar-informe-empleados" class="menu-link">
-        <i class="menu-icon bi bi-file-earmark-spreadsheet-fill"></i>
-        <div data-i18n="Tables">Reportes</div>
+    <li class="nav-item {% if request.path == '/descargar-informe-empleados' %} active {% endif %}">
+      <a href="/descargar-informe-empleados" class="nav-link text-white">
+        <i class="bi bi-file-earmark-spreadsheet-fill me-2"></i> Reportes
       </a>
     </li>
-    <li
-      class="menu-item {% if request.path == '/lista-de-usuarios' %} active {% endif %}">
-      <a href="/lista-de-usuarios" class="menu-link">
-        <i class="menu-icon bi bi-person-lines-fill"></i>
-        <div data-i18n="Tables">Lista de Usuarios</div>
+    <li class="nav-item {% if request.path == '/lista-de-usuarios' %} active {% endif %}">
+      <a href="/lista-de-usuarios" class="nav-link text-white">
+        <i class="bi bi-person-lines-fill me-2"></i> Lista de Usuarios
       </a>
     </li>
-    <li
-      class="menu-item {% if request.path == '/mi-perfil' %} active {% endif %}">
-      <a href="/mi-perfil" class="menu-link">
-        <i class="menu-icon bi bi-person-fill-gear"></i>
-        <div data-i18n="Tables">Mi Perfil</div>
+    <li class="nav-item {% if request.path == '/mi-perfil' %} active {% endif %}">
+      <a href="/mi-perfil" class="nav-link text-white">
+        <i class="bi bi-person-fill-gear me-2"></i> Mi Perfil
       </a>
     </li>
-    <li
-      class="menu-item ">
-      <a href="" class="menu-link">
-        <i class="menu-icon bi bi-upload"></i>
-        <div data-i18n="Tables">Subir DB</div>
+    <li class="nav-item {% if request.path == '/update_db' %} active {% endif %}">
+      <a href="/update_db" class="nav-link text-white">
+          <i class="bi bi-upload me-2"></i> Subir DB
       </a>
     </li>
-    <li class="menu-item">
-      <a href="{{ url_for('cerraSesion') }}" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
-        <div data-i18n="Tables">Salir</div>
+    <!-- Botón de Salir pegado abajo -->
+    <li class="nav-item mt-auto border-top pt-3">
+      <a href="{{ url_for('cerraSesion') }}" class="nav-link text-danger fw-bold">
+        <i class="bx bx-lock-open-alt me-2"></i> Cerrar sesion
       </a>
     </li>
   </ul>

@@ -77,11 +77,16 @@ def buscarEmpleado():
         # Realizar la búsqueda
         resultados = buscarEmpleadoBD(search_term)
         
+        # Debuggear resultados
+        print(f"Término de búsqueda: {search_term}")
+        print(f"Resultados encontrados: {len(resultados)}")
+        
         # Renderizar la plantilla con los resultados
         return render_template('empleados.html', empleados=resultados, search=search_term)
     
     except Exception as e:
         # En caso de error, mostrar mensaje y redireccionar
+        print(f"Error en buscarEmpleado(): {e}")
         flash(f'Error al buscar empleado: {str(e)}', 'error')
         return redirect(url_for('index'))
     
@@ -157,6 +162,19 @@ def eliminar_empleado(cc):
     # Redireccionamos a la lista de empleados
     return redirect(url_for('lista_empleados'))
     
+@app.route('/update_db', methods=['GET', 'POST'])
+def update_db():
+    if request.method == 'POST':
+        file = request.files.get('file')
+        if file:
+            # Aquí puedes guardar el archivo o procesarlo
+            # file.save('ruta/donde/quieras/guardar/' + file.filename)
+            return "Archivo subido correctamente"
+        else:
+            return "No se seleccionó ningún archivo"
+    
+    # Renderiza un formulario de carga si es GET
+    return render_template('update_db.html')
 
 
 

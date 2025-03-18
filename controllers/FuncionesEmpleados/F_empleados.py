@@ -97,61 +97,6 @@ def buscarEmpleadoBD(search):
             with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
                 querySQL = """
                     SELECT 
-                        CC, 
-                        NOM AS Nombre,  <!-- Renombramos NOM a Nombre para mayor claridad -->
-                        CAR, 
-                        CENTRO AS Centro  <!-- Renombramos CENTRO a Centro -->
-                    FROM tbl_empleados
-                    WHERE 
-                        CC LIKE %s OR 
-                        NOM LIKE %s OR 
-                        CAR LIKE %s OR 
-                        CENTRO LIKE %s
-                    ORDER BY CC DESC
-                """
-                search_pattern = f"%{search}%"  # Agregar "%" alrededor del término de búsqueda
-                mycursor.execute(querySQL, (
-                    search_pattern, search_pattern, search_pattern, search_pattern
-                ))
-                resultado_busqueda = mycursor.fetchall()
-                return resultado_busqueda
-    except Exception as e:
-        print(f"Error en la función buscarEmpleadoBD: {e}")
-        return None
-def buscarEmpleadoUnico(id):
-    try:
-        with connectionBD() as conexion_MySQLdb:
-            with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
-                querySQL = ("""
-                        SELECT 
-                            e.cc,
-                            e.nombre_empleado, 
-                            e.apellido_empleado,
-                            e.sexo_empleado,
-                            e.telefono_empleado,
-                            e.email_empleado,
-                            e.profesion_empleado,
-                            e.salario_empleado,
-                            e.foto_empleado
-                        FROM tbl_empleados AS e
-                        WHERE e.cc =%s LIMIT 1
-                    """)
-                mycursor.execute(querySQL, (id,))
-                empleado = mycursor.fetchone()
-                return empleado
-
-    except Exception as e:
-        print(f"Ocurrió un error en def buscarEmpleadoUnico: {e}")
-        return []
-
-# Agregar esto a controllers/empleados_controller.py o donde corresponda según tu estructura
-
-def buscarEmpleadoBD(search):
-    try:
-        with connectionBD() as conexion_MySQLdb:
-            with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
-                querySQL = ("""
-                    SELECT 
                         e.CC,
                         e.NOM, 
                         e.CAR,
@@ -166,11 +111,37 @@ def buscarEmpleadoBD(search):
                     FROM tbl_empleados AS e
                     WHERE e.CC LIKE %s OR e.NOM LIKE %s 
                     ORDER BY e.NOM ASC
-                """)
+                """
                 search_pattern = f"%{search}%"  # Agregar "%" alrededor del término de búsqueda
                 mycursor.execute(querySQL, (search_pattern, search_pattern))
                 resultado_busqueda = mycursor.fetchall()
                 return resultado_busqueda
     except Exception as e:
         print(f"Error en la búsqueda: {e}")
+        return []
+
+# Función buscarEmpleadoUnico (sin cambios)
+def buscarEmpleadoUnico(id):
+    try:
+        with connectionBD() as conexion_MySQLdb:
+            with conexion_MySQLdb.cursor(dictionary=True) as mycursor:
+                querySQL = """
+                    SELECT 
+                        e.cc,
+                        e.nombre_empleado, 
+                        e.apellido_empleado,
+                        e.sexo_empleado,
+                        e.telefono_empleado,
+                        e.email_empleado,
+                        e.profesion_empleado,
+                        e.salario_empleado,
+                        e.foto_empleado
+                    FROM tbl_empleados AS e
+                    WHERE e.cc = %s LIMIT 1
+                """
+                mycursor.execute(querySQL, (id,))
+                empleado = mycursor.fetchone()
+                return empleado
+    except Exception as e:
+        print(f"Ocurrió un error en def buscarEmpleadoUnico: {e}")
         return []
