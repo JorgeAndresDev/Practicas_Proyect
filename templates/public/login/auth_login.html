@@ -1,8 +1,7 @@
 <div class="container-fluid ">
-  <div class="authentication-wrapper authentication-basic container-p-y bg-light">
     <div class="authentication-inner ">
       <div class="card darky">
-        <div class="card-body">
+        <div class="card-body ">
           <div class="app-brand justify-content-center">
             <span class="app-brand-logo">
               <img
@@ -70,19 +69,24 @@
 </div>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const passwordInput = document.getElementById('passuser');
-    const toggleIcon = document.getElementById('togglePasswordIcon');
-
-    toggleIcon.addEventListener('click', function () {
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        toggleIcon.classList.remove('bx-hide');
-        toggleIcon.classList.add('bx-show');
-      } else {
-        passwordInput.type = 'password';
-        toggleIcon.classList.remove('bx-show');
-        toggleIcon.classList.add('bx-hide');
-      }
+  // Asegúrate de que el selector coincida exactamente con el ID en tu HTML
+  const container = document.querySelector("#myContainer");
+  
+  if (container) {
+    // Inicializa PerfectScrollbar con opciones
+    const ps = new PerfectScrollbar(container, {
+      wheelPropagation: true,
+      suppressScrollX: false
     });
-  });
+    console.log("PerfectScrollbar inicializado correctamente");
+  } else {
+    console.error("El contenedor #myContainer para PerfectScrollbar no fue encontrado.");
+    // Intenta con un selector alternativo si tienes dudas sobre el ID
+    const altContainer = document.querySelector(".scrollable-container");
+    if (altContainer) {
+      new PerfectScrollbar(altContainer);
+      console.log("PerfectScrollbar inicializado con selector alternativo");
+    }
+  }
+});
 </script>

@@ -2,9 +2,11 @@ from app import app
 from flask import render_template, request, flash, redirect, url_for, session,  jsonify
 from mysql.connector.errors import Error
 
+from flask import request, redirect, render_template
 
+import pandas as pd
 
-
+from conexion.conexionBD import connectionBD 
 # Importando cenexión a BD
 from controllers.FuncionesEmpleados.F_empleados import buscarEmpleadoBD, buscarEmpleadoUnico, obtener_empleado_por_cc, registrar_empleado, sql_lista_empleadosBD
 from controllers.FuncionesUsuarios.funciones_usuarios import eliminarUsuario, lista_usuariosBD, sql_eliminar_empleado
@@ -39,8 +41,6 @@ def viewFormEmpleado():
         return redirect(url_for('viewFormEmpleado'))
 
 
-
-
 # Ruta para listar empleados
 @app.route('/lista_empleados')
 def lista_empleados():
@@ -60,7 +60,6 @@ def detalles_empleado(cc):
     else:
         # Si no se encuentra el empleado, mostramos una página de error
         return render_template('error.html', mensaje="Empleado no encontrado")
-
 
 
 # Ruta para buscar empleados
@@ -91,10 +90,6 @@ def buscarEmpleado():
         return redirect(url_for('index'))
     
 
-
-
-
-
 @app.route("/editar-empleado/<int:id>", methods=['GET'])
 def viewEditarEmpleado(id):
     if 'conectado' in session:
@@ -107,10 +102,6 @@ def viewEditarEmpleado(id):
     else:
         flash('Primero debes iniciar sesión.', 'error')
         return redirect(url_for('inicio'))
-
-
-# Recibir formulario para actulizar informacion de empleado
-from flask import request, redirect, render_template
 
 
 @app.route('/buscar-empleado-ajax', methods=['POST'])
@@ -127,7 +118,6 @@ def buscarEmpleadoAjax():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 
 #Rutas para las funciones de usuarios 
@@ -162,21 +152,44 @@ def eliminar_empleado(cc):
     # Redireccionamos a la lista de empleados
     return redirect(url_for('lista_empleados'))
     
-@app.route('/update_db', methods=['GET', 'POST'])
-def update_db():
-    if request.method == 'POST':
-        file = request.files.get('file')
-        if file:
-            # Aquí puedes guardar el archivo o procesarlo
-            # file.save('ruta/donde/quieras/guardar/' + file.filename)
-            return "Archivo subido correctamente"
+@app.route('/subir-excel', methods=['POST'])
+def subir_excel():
+    if 'file' not in request.files:
+        return jsonify({"message": "No se ha subido ningún archivo"}), 400
+
+    file = request.files['file']
+    df = pd.read_excel(file)  # Leer el archivo Excel
+
+    # Se remplaza NaN por 0
+    df = df.fillna(0)
+
+    conn =  conexionBD()
+    cursor = conn.cursor(dictionary=True)
+
+    for _, row in df.iterrows():
+        sql_check = "SELECT * FROM tbl_empleados WHERE CC = %s"
+        cursor.execute(sql_check, (row["CC"],))
+        empleado_existente = cursor.fetchone()
+
+        if empleado_existente:
+            sql_update = """
+                UPDATE tbl_empleados SET NOM = %s, CAR = %s, CENTRO = %s, CASH = %s, 
+                SAC = %s, `CHECK` = %s, `MOD` = %s, ER = %s, PARADAS = %s WHERE CC = %s
+            """
+            cursor.execute(sql_update, (row["NOM"], row["CAR"], row["CENTRO"], row["CASH"], 
+                                        row["SAC"], row["CHECK"], row["MOD"], row["ER"], row["PARADAS"], row["CC"]))
         else:
-            return "No se seleccionó ningún archivo"
-    
-    # Renderiza un formulario de carga si es GET
-    return render_template('update_db.html')
+            sql_insert = """
+                INSERT INTO tbl_empleados (CC, NOM, CAR, CENTRO, CASH, SAC, `CHECK`, `MOD`, ER, PARADAS)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            cursor.execute(sql_insert, (row["CC"], row["NOM"], row["CAR"], row["CENTRO"], row["CASH"], 
+                                        row["SAC"], row["CHECK"], row["MOD"], row["ER"], row["PARADAS"]))
+        conn.commit()
 
+    cursor.close()
+    conn.close()
+    return jsonify({"message": "Base de datos actualizada correctamente"}), 200
 
-
-
-    
+if __name__ == '__main__':
+    app.run(debug=True)

@@ -1,67 +1,60 @@
 {% extends 'public/base_cpanel.html' %}
-<!--Cambiando el title-->
-{% block title %}Crud - Python 🐍 | Lista de Usuarios{% endblock %}
-<!---->
-{% block body %} {% if (resp_usuariosBD) %}
 
-<div class="card content_consignaciones " style="border-radius: 0px !important">
-  <section id="respuestaFiltroMes">
-    <h2 class="text-center mt-5 mb-5">
-      Lista de Usuarios Creados
-      <hr />
-    </h2>
-    <div class="table-responsive text-nowrap">
-      <table class="table table-hover bg-dark text-white">
-        <thead>
-          <tr style="background-color: #ddd">
-            <th>Usuario</th>
-            <th>Email</th>
-            <th>Fecha de creaci&oacute;n</th>
-            <th>Accci&oacute;n</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for usuario in resp_usuariosBD %}
-          <tr>
-            <td>{{ usuario.name_surname}}</td>
-            <td>{{ usuario.email_user}}</td>
-            <td>{{ usuario.created_user}}</td>
-            <td>
-              <button
-                class="btn rounded-pill btn-danger"
-                onclick="eliminarUsuario('{{ usuario.id }}');">
-                <i class="bi bi-trash3"></i>
-                Eliminar
-              </button>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </section>
-</div>
-{% else %}
-<div class="container mt-3 mb-3" style="width: 100% !important">
-  <div class="row justify-content-md-center mb-2">
-    <div class="col-12">
-      <h2 class="text-center">No hay usuarios 😭</h2>
+{% block title %}Crud - Python 🐍 | Lista de Usuarios{% endblock %}
+
+{% block body %}
+{% if resp_usuariosBD %}
+<div class="container mt-5 mb-5">
+  <div class="card shadow rounded-4 border-0">
+    <div class="card-body">
+      <h2 class="text-center mb-4 fw-bold">Lista de Usuarios Creados</h2>
+      <hr class="mb-4" />
+      
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-dark text-center">
+            <tr>
+              <th>Usuario</th>
+              <th>Email</th>
+              <th>Fecha de creación</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody class="table-group-divider">
+            {% for usuario in resp_usuariosBD %}
+            <tr>
+              <td>{{ usuario.name_surname }}</td>
+              <td>{{ usuario.email_user }}</td>
+              <td>{{ usuario.created_user }}</td>
+              <td class="text-center">
+                <button class="btn btn-outline-danger btn-sm rounded-pill px-3"
+                        onclick="eliminarUsuario('{{ usuario.id }}');">
+                  <i class="bi bi-trash3 me-2"></i>Eliminar
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
+{% else %}
+<div class="container mt-5 mb-5">
+  <div class="alert alert-warning text-center shadow rounded-4" role="alert">
+    <h4 class="fw-bold">No hay usuarios 😭</h4>
+  </div>
+</div>
 {% endif %}
-<!--Fin del Block-->
 {% endblock %}
 
-<!--Script Custom-->
 {% block customJS %}
 <script>
   function eliminarUsuario(id) {
-    if (confirm("¿Estas seguro que deseas eliminar el Usuario?")) {
+    if (confirm("¿Estás seguro que deseas eliminar el Usuario?")) {
       let url = `/borrar-usuario/${id}`;
-      if (url) {
-        window.location.href = url;
-      }
+      window.location.href = url;
     }
   }
 </script>

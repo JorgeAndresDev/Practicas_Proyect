@@ -1,57 +1,100 @@
-<aside id="layout-menu" class="layout-menu menu-vertical bg-dark text-white min-vh-100 p-3 d-flex flex-column">
-  <div class="app-brand demo">
+<aside id="layout-menu" class="layout-menu menu-vertical bg-dark text-white vh-100 p-3 d-flex flex-column"
+  style="overflow-x: hidden;">
+
+  <!-- Logo y toggle para móviles -->
+  <div class="app-brand demo mb-4">
     <a href="{{ url_for('inicio') }}" class="app-brand-link">
       <span class="app-brand-logo demo">
-        <img
-          src="{{ url_for('static', filename ='assets/img/logo.png') }}"
-          alt="Logo" width="200px" height="200"/>
+        <img src="{{ url_for('static', filename ='assets/img/logo.png') }}" alt="Logo" width="200" height="200" />
       </span>
     </a>
-
-    <a
-      href="javascript:void(0);"
-      class=" layout-menu-toggle  menu-link text-large ms-auto d-block d-xl-none">
+    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
       <i class="bx bx-chevron-left bx-sm align-middle"></i>
     </a>
   </div>
 
-  <!-- Menú en columna -->
-  <ul class="nav flex-column flex-grow-1">
-    <li class="nav-item {% if request.path == '/registrar_empleado' %} active {% endif %}">
-      <a href="/registrar_empleado" class="nav-link text-white">
-        <i class="bi bi-person-bounding-box me-2"></i> Registrar Empleado
+  <!-- Separador visual -->
+  <div class="menu-inner-shadow mb-4"></div>
+
+  <!-- Menú scrollable -->
+  <div class="flex-grow-1 overflow-auto">
+    <ul class="menu-inner list-unstyled ps-0 mb-0">
+
+      <!-- Opciones del menú -->
+      <li class="menu-item {% if request.path == '/registrar_empleado' %} active {% endif %} mb-2">
+        <a href="/registrar_empleado"
+          class="menu-link text-white text-decoration-none d-flex align-items-center p-2 rounded hover-success">
+          <i class="menu-icon bi bi-person-bounding-box me-2 fs-5"></i>
+          <div class="fs-6">Registrar Empleado</div>
+        </a>
+      </li>
+
+      <li class="menu-item {% if request.path == '/lista_empleados' %} active {% endif %} mb-2">
+        <a href="/lista_empleados"
+          class="menu-link text-white text-decoration-none d-flex align-items-center p-2 rounded hover-success">
+          <i class="menu-icon bi bi-person-lines-fill me-2 fs-5"></i>
+          <div class="fs-6">Lista de Empleados</div>
+        </a>
+      </li>
+
+      <li class="menu-item {% if request.path == '/descargar-informe-empleados' %} active {% endif %} mb-2">
+        <a href="/descargar-informe-empleados"
+          class="menu-link text-white text-decoration-none d-flex align-items-center p-2 rounded hover-success">
+          <i class="menu-icon bi bi-file-earmark-spreadsheet-fill me-2 fs-5"></i>
+          <div class="fs-6">Reportes</div>
+        </a>
+      </li>
+
+      <li class="menu-item {% if request.path == '/lista-de-usuarios' %} active {% endif %} mb-2">
+        <a href="/lista-de-usuarios"
+          class="menu-link text-white text-decoration-none d-flex align-items-center p-2 rounded hover-success">
+          <i class="menu-icon bi bi-person-lines-fill me-2 fs-5"></i>
+          <div class="fs-6">Lista de Usuarios</div>
+        </a>
+      </li>
+
+      <li class="menu-item {% if request.path == '/mi-perfil' %} active {% endif %} mb-2">
+        <a href="/mi-perfil"
+          class="menu-link text-white text-decoration-none d-flex align-items-center p-2 rounded hover-success">
+          <i class="menu-icon bi bi-person-fill-gear me-2 fs-5"></i>
+          <div class="fs-6">Mi Perfil</div>
+        </a>
+      </li>
+
+    </ul>
+  </div>
+
+  <!-- Cerrar sesión (parte inferior) -->
+  <div class="mt-auto border-top pt-3">
+    <li class="menu-item">
+      <a href="{{ url_for('cerraSesion') }}"
+        class="menu-link text-danger text-decoration-none d-flex align-items-center p-2 rounded hover-danger">
+        <i class="menu-icon tf-icons bx bx-lock-open-alt me-2 fs-5"></i>
+        <div class="fs-6">Cerrar Sesión</div>
       </a>
     </li>
-    <li class="nav-item {% if request.path == '/lista_empleados' %} active {% endif %}">
-      <a href="/lista_empleados" class="nav-link text-white">
-        <i class="bi bi-person-lines-fill me-2"></i> Lista de Empleados
-      </a>
-    </li>
-    <li class="nav-item {% if request.path == '/descargar-informe-empleados' %} active {% endif %}">
-      <a href="/descargar-informe-empleados" class="nav-link text-white">
-        <i class="bi bi-file-earmark-spreadsheet-fill me-2"></i> Reportes
-      </a>
-    </li>
-    <li class="nav-item {% if request.path == '/lista-de-usuarios' %} active {% endif %}">
-      <a href="/lista-de-usuarios" class="nav-link text-white">
-        <i class="bi bi-person-lines-fill me-2"></i> Lista de Usuarios
-      </a>
-    </li>
-    <li class="nav-item {% if request.path == '/mi-perfil' %} active {% endif %}">
-      <a href="/mi-perfil" class="nav-link text-white">
-        <i class="bi bi-person-fill-gear me-2"></i> Mi Perfil
-      </a>
-    </li>
-    <li class="nav-item {% if request.path == '/update_db' %} active {% endif %}">
-      <a href="/update_db" class="nav-link text-white">
-          <i class="bi bi-upload me-2"></i> Subir DB
-      </a>
-    </li>
-    <!-- Botón de Salir pegado abajo -->
-    <li class="nav-item mt-auto border-top pt-3">
-      <a href="{{ url_for('cerraSesion') }}" class="nav-link text-danger fw-bold">
-        <i class="bx bx-lock-open-alt me-2"></i> Cerrar sesion
-      </a>
-    </li>
-  </ul>
+  </div>
 </aside>
+
+<!-- Estilos Hover -->
+<style>
+  /* Hover para el resto del menú */
+  .hover-success:hover {
+    background-color: var(--bs-success) !important;
+    color: white !important;
+  }
+
+  .hover-success:hover i {
+    color: white !important;
+  }
+
+  /* Hover específico para Cerrar Sesión */
+  .hover-danger:hover {
+    background-color: var(--bs-danger) !important;
+    color: white !important;
+  }
+
+  .hover-danger:hover i {
+    color: white !important;
+  }
+</style>

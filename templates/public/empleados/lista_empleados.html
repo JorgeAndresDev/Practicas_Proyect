@@ -1,88 +1,337 @@
 {% extends 'public/base_cpanel.html' %}
-<!--Cambiando el title-->
+
+<!-- Cambiando el title -->
 {% block title %}Crud con Python 🐍 | Lista de Empleados{% endblock %}
-<!--Inicio del block-->
+
+<!-- Inicio del block -->
 {% block body %}
 
-<div class="card" style="border-radius: 0px !important">
-  <div class="row justify-content-center mb-2">
-    <div class="col-md-12 mb-4 bg-ligth rounded-pill">
-      <h3 class="text-center mt-5 mb-3 text-dark">LISTA DE EMPLEADOS</h3>
-      <hr />
-    </div>
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <!-- Card principal -->
+      <div class="card shadow-sm border-0">
+        <!-- Header con título -->
+        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
+          <h3 class="card-title text-center text-dark flex-grow-1 m-0">LISTA DE EMPLEADOS</h3>
+        </div>
+        
+        <!-- Body principal -->
+        <div class="card-body">
+          <!-- Área de herramientas - Excel y búsqueda -->
+          <div class="row g-3 mb-4 align-items-end">
+            <!-- Excel upload -->
+            <div class="col-md-6">
+              <form id="uploadForm" enctype="multipart/form-data" method="POST" action="/subir-excel" class="d-flex flex-wrap align-items-center gap-2">
+                <div class="form-group flex-grow-1">
+                  <label for="fileInput" class="form-label text-secondary small mb-1">
+                    <i class="bi bi-file-earmark-excel me-1"></i>Cargar datos desde Excel
+                  </label>
+                  <div class="input-group">
+                    <input type="file" id="fileInput" name="file" accept=".xlsx, .xls" class="form-control border-secondary">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="bi bi-upload me-2"></i>Subir
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            
+            <!-- Búsqueda -->
+            <div class="col-md-6">
+              <label for="search" class="form-label text-secondary small mb-1">
+                <i class="bi bi-filter me-1"></i>Filtrar datos
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input 
+                  type="search" 
+                  id="search" 
+                  class="form-control border-start-0" 
+                  placeholder="Buscar empleado..." 
+                  onkeyup="buscadorTable('tbl_empleados')">
+              </div>
+            </div>
+          </div>
 
-    <div class="row justify-content-end">
-      <div class="col-md-6 mt-4 py-2">
-        <!-- Formulario de búsqueda -->
-        <form action="{{ url_for('buscarEmpleado') }}" method="POST" class="d-flex">
-          <input
-            type="search"
-            id="search"
-            name="search"
-            class="form-control border-0"
-            placeholder="Buscar empleado..."
-            required />
-        </form>
+          <!-- Tabla con borde suave -->
+          <div class="card shadow-sm border">
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table
+                  id="tbl_empleados"
+                  class="table table-hover table-striped mb-0"
+                  cellspacing="0"
+                  width="100%">
+                  <thead class="table-dark">
+                    <tr>
+                      <th class="text-center">CC</th>
+                      <th class="text-center">Nombre</th>
+                      <th class="text-center">Cargo</th>
+                      <th class="text-center">Centro</th>
+                      <th class="text-center" style="width: 150px">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% if empleados %}
+                      {% for empleado in empleados %}
+                      <tr>
+                        <td class="text-center align-middle">{{ empleado.CC }}</td>
+                        <td class="text-center align-middle">{{ empleado.NOM }}</td>
+                        <td class="text-center align-middle">{{ empleado.CAR }}</td>
+                        <td class="text-center align-middle">{{ empleado.CENTRO }}</td>
+                        <td class="text-center align-middle">
+                          <div class="btn-group" role="group">
+                            <a
+                              href="/detalles-empleado/{{ empleado.CC }}"
+                              class="btn btn-info btn-sm rounded-start"
+                              title="Ver detalles">
+                              <i class="bi bi-eye"></i>
+                            </a>
+                            <a
+                              href="{{ url_for('viewEditarEmpleado', id=empleado.CC) }}"
+                              class="btn btn-primary btn-sm"
+                              title="Actualizar Registro">
+                              <i class="bi bi-arrow-clockwise"></i>
+                            </a>
+                            <a
+                              href="{{ url_for('eliminar_empleado', cc=empleado.CC) }}"
+                              class="btn btn-danger btn-sm rounded-end"
+                              title="Eliminar empleado"
+                              onclick="return confirm('¿Estás seguro de eliminar al empleado {{ empleado.NOM }}?');">
+                              <i class="bi bi-trash3"></i>
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    {% else %}
+                      <tr>
+                        <td colspan="5" class="text-center py-4">
+                          <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-2"></i>No hay empleados registrados.
+                          </div>
+                        </td>
+                      </tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <!-- Footer con paginación -->
+            <div class="card-footer bg-white py-3">
+              <nav aria-label="Paginación de empleados">
+                <ul class="pagination pagination-sm justify-content-center mb-0" id="paginacion">
+                  <!-- El JavaScript insertará los elementos de paginación aquí -->
+                </ul>
+              </nav>
+            </div>
+          </div>
+          
+          <!-- Resumen informativo -->
+          <div class="row mt-4">
+            <div class="col-12">
+              <div class="alert alert-light border shadow-sm d-flex align-items-center">
+                <div class="me-3 text-primary">
+                  <i class="bi bi-info-circle-fill fs-3"></i>
+                </div>
+                <div>
+                  <p class="mb-0">Esta tabla muestra todos los empleados registrados en el sistema. Utilice los controles de búsqueda para filtrar resultados o la paginación para navegar entre páginas.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="row justify-content-center mb-2">
-      <table 
-        id="tbl_empleados" 
-        class="table table-bordered table-hover" 
-        cellspacing="0" 
-        width="100%">
-        <thead>
-          <tr>
-            <th>CC</th>
-            <th>Nombre</th>
-            <th>Cargo</th>
-            <th>Centro</th>
-            <th>Ver</th>
-            <th>Actualizar</th>
-            <th>Eliminar</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% if empleados %}
-            {% for empleado in empleados %}
-            <tr>
-              <td>{{ empleado.CC }}</td>
-              <td>{{ empleado.NOM }}</td>
-              <td>{{ empleado.CAR }}</td>
-              <td>{{ empleado.CENTRO }}</td>
-              <td>
-                <a href="/detalles-empleado/{{ empleado.CC }}" class="btn btn-info btn-lg" title="Ver detalles">
-                  <i class="bi bi-eye"></i> 
-                </a>
-              </td>
-              <td class="d-flex justify-content-center">
-                <a
-                  href="{{ url_for('viewEditarEmpleado', id=empleado.CC) }}"
-                  class="btn btn-success btn-lg"
-                  title="Actualizar Registro">
-                  <i class="bi bi-arrow-clockwise"></i> 
-                </a>
-              </td>
-              <td>  
-                <a
-                  href="{{ url_for('eliminar_empleado', cc=empleado.CC) }}"
-                  class="btn btn-danger btn-lg"
-                  title="Eliminar empleado"
-                  onclick="return confirm('¿Estás seguro de eliminar al empleado {{ empleado.NOM }}?');">
-                  <i class="bi bi-trash3" id="btn-delete"></i>
-                </a>
-              </td>
-            </tr>
-            {% endfor %}
-          {% else %}
-            <tr>
-              <td colspan="7" class="text-center">No hay empleados registrados.</td>
-            </tr>
-          {% endif %}
-        </tbody>
-      </table>
     </div>
   </div>
 </div>
+
+<!-- JavaScript para la paginación -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Configuración de paginación
+    const itemsPorPagina = 10;
+    const tabla = document.getElementById('tbl_empleados');
+    const filas = tabla.querySelectorAll('tbody tr');
+    
+    // Si no hay filas o solo hay una fila de "no hay empleados", no paginar
+    if (filas.length <= 1 && filas[0].querySelector('td[colspan]')) {
+      return;
+    }
+    
+    const totalPaginas = Math.ceil(filas.length / itemsPorPagina);
+    let paginaActual = 1;
+    
+    function mostrarPagina(pagina) {
+      // Ocultar todas las filas
+      filas.forEach(fila => fila.style.display = 'none');
+      
+      // Calcular qué filas mostrar
+      const inicio = (pagina - 1) * itemsPorPagina;
+      const fin = Math.min(inicio + itemsPorPagina, filas.length);
+      
+      // Mostrar las filas de la página actual
+      for(let i = inicio; i < fin; i++) {
+        filas[i].style.display = '';
+      }
+      
+      // Actualizar paginación
+      actualizarPaginacion();
+    }
+    
+    function actualizarPaginacion() {
+      const paginacion = document.getElementById('paginacion');
+      paginacion.innerHTML = '';
+      
+      // Botón Anterior
+      const prevLi = document.createElement('li');
+      prevLi.className = `page-item ${paginaActual === 1 ? 'disabled' : ''}`;
+      const prevLink = document.createElement('a');
+      prevLink.className = 'page-link';
+      prevLink.href = '#';
+      prevLink.textContent = 'Anterior';
+      prevLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (paginaActual > 1) {
+          paginaActual--;
+          mostrarPagina(paginaActual);
+        }
+      });
+      prevLi.appendChild(prevLink);
+      paginacion.appendChild(prevLi);
+      
+      // Números de página
+      for (let i = 1; i <= totalPaginas; i++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${i === paginaActual ? 'active' : ''}`;
+        const link = document.createElement('a');
+        link.className = 'page-link';
+        link.href = '#';
+        link.textContent = i;
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          paginaActual = i;
+          mostrarPagina(paginaActual);
+        });
+        li.appendChild(link);
+        paginacion.appendChild(li);
+      }
+      
+      // Botón Siguiente
+      const nextLi = document.createElement('li');
+      nextLi.className = `page-item ${paginaActual === totalPaginas ? 'disabled' : ''}`;
+      const nextLink = document.createElement('a');
+      nextLink.className = 'page-link';
+      nextLink.href = '#';
+      nextLink.textContent = 'Siguiente';
+      nextLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (paginaActual < totalPaginas) {
+          paginaActual++;
+          mostrarPagina(paginaActual);
+        }
+      });
+      nextLi.appendChild(nextLink);
+      paginacion.appendChild(nextLi);
+    }
+    
+    // Inicializar la tabla con la primera página
+    mostrarPagina(1);
+    
+    // Modificar el buscador para que respete la paginación
+    window.buscadorTable = function(tableId) {
+      const searchInput = document.getElementById('search');
+      const filter = searchInput.value.toUpperCase();
+      const table = document.getElementById(tableId);
+      const tr = table.getElementsByTagName('tr');
+      
+      let hayResultados = false;
+      
+      // Filtrar por todas las filas de la tabla (no solo las visibles)
+      for (let i = 1; i < tr.length; i++) {
+        // Saltear la fila de "no hay empleados"
+        if (tr[i].querySelector('td[colspan]')) continue;
+        
+        const tds = tr[i].getElementsByTagName('td');
+        let mostrar = false;
+        
+        // Buscar en todas las columnas
+        for (let j = 0; j < tds.length - 1; j++) { // Excluir la columna de acciones
+          const txtValue = tds[j].textContent || tds[j].innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            mostrar = true;
+            hayResultados = true;
+            break;
+          }
+        }
+        
+        tr[i].style.display = mostrar ? '' : 'none';
+      }
+      
+      // Si estamos buscando, ocultar paginación
+      document.getElementById('paginacion').style.display = filter ? 'none' : '';
+      
+      // Si no hay resultados, mostrar mensaje
+      const noResultsRow = document.getElementById('no-results-row');
+      if (!hayResultados && filter) {
+        if (!noResultsRow) {
+          const tbody = table.querySelector('tbody');
+          const row = document.createElement('tr');
+          row.id = 'no-results-row';
+          row.innerHTML = `<td colspan="5" class="text-center py-3">No se encontraron resultados para "${searchInput.value}"</td>`;
+          tbody.appendChild(row);
+        } else {
+          noResultsRow.style.display = '';
+        }
+      } else if (noResultsRow) {
+        noResultsRow.style.display = 'none';
+      }
+      
+      // Si no hay búsqueda, restaurar la paginación
+      if (!filter) {
+        mostrarPagina(1);
+      }
+    };
+  });
+</script>
+
+<!-- Estilos personalizados para responsividad -->
+<style>
+  @media (max-width: 768px) {
+    /* Ocultar columnas innecesarias en pantallas pequeñas */
+    #tbl_empleados th:nth-child(3),
+    #tbl_empleados td:nth-child(3),
+    #tbl_empleados th:nth-child(4),
+    #tbl_empleados td:nth-child(4) {
+      display: none;
+    }
+
+    /* Ajustar el ancho de la tabla */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    /* Mostrar solo nombre, cédula y acciones */
+    #tbl_empleados td:nth-child(1),
+    #tbl_empleados td:nth-child(2),
+    #tbl_empleados td:nth-child(5) {
+      display: table-cell;
+    }
+
+    /* Reducir espacio entre componentes */
+    .card-body {
+      padding: 1rem;
+    }
+    
+    /* Ajustar botones de paginación para móviles */
+    .pagination .page-link {
+      padding: 0.375rem 0.5rem;
+    }
+  }
+</style>
 
 {% endblock %}

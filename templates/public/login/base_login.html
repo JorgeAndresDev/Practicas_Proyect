@@ -55,6 +55,17 @@
 
     <script src="{{ url_for('static', filename ='assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ url_for('static', filename ='assets/js/config.js') }}"></script>
+
+    <!-- Estilo para la imagen de fondo -->
+    <style>
+      body {
+          background-image: url("{{ url_for('static', filename='assets/img/bg-login.jfif') }}");
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+      }
+    </style>
   </head>
 
   <body>
@@ -72,7 +83,6 @@
     {% include 'public/login/auth_login.html' %}
     <!--fin del cuerpo-->
     {% endblock %}
-   
 
     <script src="{{ url_for('static', filename ='assets/customJS/home.js') }}"></script>
   </body>
