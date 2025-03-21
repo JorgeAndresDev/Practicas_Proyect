@@ -168,22 +168,20 @@ def subir_excel():
         if empleado_existente:
             sql_update = """
                 UPDATE tbl_empleados SET NOM = %s, CAR = %s, CENTRO = %s, CASH = %s, 
-                SAC = %s, `CHECK` = %s, `MOD` = %s, ER = %s, PARADAS = %s WHERE CC = %s
+                SAC = %s, `CHECK` = %s, `MOD` = %s, ER = %s, PARADAS = %s, PERFORMANCE = %s WHERE CC = %s
             """
             cursor.execute(sql_update, (row["NOM"], row["CAR"], row["CENTRO"], row["CASH"], 
-                                        row["SAC"], row["CHECK"], row["MOD"], row["ER"], row["PARADAS"], row["CC"]))
+                                        row["SAC"], row["CHECK"], row["MOD"], row["ER"], row["PARADAS"],row["PERFORMANCE"], row["CC"]))
         else:
             sql_insert = """
-                INSERT INTO tbl_empleados (CC, NOM, CAR, CENTRO, CASH, SAC, `CHECK`, `MOD`, ER, PARADAS)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO tbl_empleados (CC, NOM, CAR, CENTRO, CASH, SAC, `CHECK`, `MOD`, ER, PARADAS,PERFORMANCE)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(sql_insert, (row["CC"], row["NOM"], row["CAR"], row["CENTRO"], row["CASH"], 
-                                        row["SAC"], row["CHECK"], row["MOD"], row["ER"], row["PARADAS"]))
+                                        row["SAC"], row["CHECK"], row["MOD"], row["ER"], row["PARADAS"], row["PERFORMANCE"] ))
         conn.commit()
 
     cursor.close()
     conn.close()
     return jsonify({"message": "Base de datos actualizada correctamente"}), 200
 
-if __name__ == '__main__':
-    app.run(debug=True)

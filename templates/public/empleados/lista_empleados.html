@@ -67,11 +67,11 @@
                   width="100%">
                   <thead class="table-dark">
                     <tr>
-                      <th class="text-center">CC</th>
-                      <th class="text-center">Nombre</th>
-                      <th class="text-center">Cargo</th>
-                      <th class="text-center">Centro</th>
-                      <th class="text-center" style="width: 150px">Acciones</th>
+                      <th class="text-center text-secondary">CC</th>
+                      <th class="text-center text-warning">Nombre</th>
+                      <th class="text-center text-warning">Cargo</th>
+                      <th class="text-center text-warning">Centro</th>
+                      <th class="text-center text-secondary style="width: 150px">Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -89,21 +89,22 @@
                               class="btn btn-info btn-sm rounded-start"
                               title="Ver detalles">
                               <i class="bi bi-eye"></i>
-                            </a>
+                            </a>           
                             <a
-                              href="{{ url_for('viewEditarEmpleado', id=empleado.CC) }}"
-                              class="btn btn-primary btn-sm"
+                              href="/editar_empleado/{{ empleado.CC }}"
+                              class="btn btn-primary btn-sm border-end"
                               title="Actualizar Registro">
                               <i class="bi bi-arrow-clockwise"></i>
                             </a>
+                          
                             <a
                               href="{{ url_for('eliminar_empleado', cc=empleado.CC) }}"
-                              class="btn btn-danger btn-sm rounded-end"
+                              class="btn btn-danger btn-sm"
                               title="Eliminar empleado"
                               onclick="return confirm('¿Estás seguro de eliminar al empleado {{ empleado.NOM }}?');">
                               <i class="bi bi-trash3"></i>
                             </a>
-                          </div>
+                          </div>                          
                         </td>
                       </tr>
                       {% endfor %}
@@ -298,7 +299,58 @@
     };
   });
 </script>
-
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const uploadForm = document.getElementById('uploadForm');
+    
+    uploadForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(uploadForm);
+        const fileInput = document.getElementById('fileInput');
+        
+        // Validar que se haya seleccionado un archivo
+        if (fileInput.files.length === 0) {
+            alert('Por favor, seleccione un archivo Excel');
+            return;
+        }
+        
+        // Mostrar indicador de carga
+        const submitButton = uploadForm.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...';
+        
+        fetch('/subir-excel', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Restaurar botón
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
+            
+            // Mostrar mensaje de éxito
+            alert(data.message + (data.registros_actualizados !== undefined ? 
+                `\nRegistros actualizados: ${data.registros_actualizados}` +
+                `\nRegistros nuevos: ${data.registros_nuevos}` : ''));
+                
+            // Limpiar el formulario
+            uploadForm.reset();
+        })
+        .catch(error => {
+            // Restaurar botón
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
+            
+            // Mostrar error
+            alert('Error al procesar el archivo. Por favor, inténtelo de nuevo.');
+            console.error('Error:', error);
+        });
+    });
+});
+</script>
 <!-- Estilos personalizados para responsividad -->
 <style>
   @media (max-width: 768px) {

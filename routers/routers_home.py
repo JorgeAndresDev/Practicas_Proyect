@@ -3,10 +3,13 @@ from flask import render_template, request, flash, redirect, url_for, session,  
 from mysql.connector.errors import Error
 
 from flask import request, redirect, render_template
+from flask import render_template, request, redirect, url_for, jsonify
 
 import pandas as pd
-
-from conexion.conexionBD import connectionBD 
+from conexion.conexionBD import connectionBD
+from flask import Flask, send_file, make_response
+from io import BytesIO
+from datetime import datetime
 # Importando cenexión a BD
 from controllers.FuncionesEmpleados.F_empleados import buscarEmpleadoBD, buscarEmpleadoUnico, obtener_empleado_por_cc, registrar_empleado, sql_lista_empleadosBD
 from controllers.FuncionesUsuarios.funciones_usuarios import eliminarUsuario, lista_usuariosBD, sql_eliminar_empleado
@@ -90,19 +93,6 @@ def buscarEmpleado():
         return redirect(url_for('index'))
     
 
-@app.route("/editar-empleado/<int:id>", methods=['GET'])
-def viewEditarEmpleado(id):
-    if 'conectado' in session:
-        respuestaEmpleado = buscarEmpleadoUnico(id)
-        if respuestaEmpleado:
-            return render_template(f'{PATH_URL}/form_empleado_update.html', respuestaEmpleado=respuestaEmpleado)
-        else:
-            flash('El empleado no existe.', 'error')
-            return redirect(url_for('inicio'))
-    else:
-        flash('Primero debes iniciar sesión.', 'error')
-        return redirect(url_for('inicio'))
-
 
 @app.route('/buscar-empleado-ajax', methods=['POST'])
 def buscarEmpleadoAjax():
@@ -156,14 +146,14 @@ def eliminar_empleado(cc):
 def subir_excel():
     if 'file' not in request.files:
         return jsonify({"message": "No se ha subido ningún archivo"}), 400
-
+    
     file = request.files['file']
     df = pd.read_excel(file)  # Leer el archivo Excel
 
     # Se remplaza NaN por 0
     df = df.fillna(0)
 
-    conn =  conexionBD()
+    conn = connectionBD()
     cursor = conn.cursor(dictionary=True)
 
     for _, row in df.iterrows():
@@ -174,22 +164,153 @@ def subir_excel():
         if empleado_existente:
             sql_update = """
                 UPDATE tbl_empleados SET NOM = %s, CAR = %s, CENTRO = %s, CASH = %s, 
-                SAC = %s, `CHECK` = %s, `MOD` = %s, ER = %s, PARADAS = %s WHERE CC = %s
+                SAC = %s, `CHECK` = %s, `MOD` = %s, ER = %s, PARADAS = %s, PERFORMANCE = %s WHERE CC = %s
             """
             cursor.execute(sql_update, (row["NOM"], row["CAR"], row["CENTRO"], row["CASH"], 
-                                        row["SAC"], row["CHECK"], row["MOD"], row["ER"], row["PARADAS"], row["CC"]))
+                                        row["SAC"], row["CHECK"], row["MOD"], row["ER"], row["PARADAS"],row["PERFORMANCE"], row["CC"]))
         else:
             sql_insert = """
-                INSERT INTO tbl_empleados (CC, NOM, CAR, CENTRO, CASH, SAC, `CHECK`, `MOD`, ER, PARADAS)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO tbl_empleados (CC, NOM, CAR, CENTRO, CASH, SAC, `CHECK`, `MOD`, ER, PARADAS,PERFORMANCE)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(sql_insert, (row["CC"], row["NOM"], row["CAR"], row["CENTRO"], row["CASH"], 
-                                        row["SAC"], row["CHECK"], row["MOD"], row["ER"], row["PARADAS"]))
+                                        row["SAC"], row["CHECK"], row["MOD"], row["ER"], row["PARADAS"], row["PERFORMANCE"] ))
         conn.commit()
 
     cursor.close()
     conn.close()
     return jsonify({"message": "Base de datos actualizada correctamente"}), 200
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
+# Ruta para mostrar el formulario de actualización
+@app.route('/editar_empleado/<int:cc>', methods=['GET'])
+def editar_empleado(cc):
+    try:
+        # Conectar a la base de datos
+        conn = connectionBD()
+        cursor = conn.cursor(dictionary=True)
+        
+        # Consultar los datos del empleado
+        sql = "SELECT CC, NOM, CAR, CENTRO FROM tbl_empleados WHERE CC = %s"
+        cursor.execute(sql, (cc,))
+        empleado = cursor.fetchone()
+        
+        cursor.close()
+        conn.close()
+        
+        if empleado:
+            # Renderizar la plantilla con los datos del empleado
+            return render_template('editar_empleado.html', empleado=empleado)
+        else:
+            # Si no existe el empleado, redirigir a la lista
+            return redirect(url_for('lista_empleados'))
+            
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+# Ruta para procesar la actualización
+@app.route('/actualizar_empleado', methods=['POST'])
+def actualizar_empleado():
+    try:
+        # Obtener datos del formulario
+        cc = request.form['cc']
+        nom = request.form['nom']
+        car = request.form['car']
+        centro = request.form['centro']
+        
+        # Conectar a la base de datos
+        conn = connectionBD()
+        cursor = conn.cursor()
+        
+        # Actualizar solo los campos especificados
+        sql = "UPDATE tbl_empleados SET NOM = %s, CAR = %s, CENTRO = %s WHERE CC = %s"
+        cursor.execute(sql, (nom, car, centro, cc))
+        
+        # Guardar cambios
+        conn.commit()
+        
+        cursor.close()
+        conn.close()
+        
+        # Redirigir a la lista de empleados
+        return redirect(url_for('lista_empleados'))
+        
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+
+
+
+@app.route('/descargar-informe-empleados')
+def descargar_informe_empleados():
+    try:
+        # Conectar a la base de datos
+        conn = connectionBD()
+        cursor = conn.cursor(dictionary=True)
+        
+        # Consultar todos los datos de la tabla de empleados
+        sql = "SELECT * FROM tbl_empleados"
+        cursor.execute(sql)
+        empleados = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        if not empleados:
+            # Si no hay datos, puedes mostrar un mensaje o redirigir
+            return "La base de datos esta vacia, no se puede generer un reporte :("
+        
+        # Crear un DataFrame con los datos
+        df = pd.DataFrame(empleados)
+        
+        # Crear un buffer para el archivo Excel
+        output = BytesIO()
+        
+        # Crear un writer de Excel
+        writer = pd.ExcelWriter(output, engine='xlsxwriter')
+        
+        # Escribir el DataFrame al archivo Excel
+        df.to_excel(writer, sheet_name='Empleados', index=False)
+        
+        # Obtener el libro de trabajo y la hoja
+        workbook = writer.book
+        worksheet = writer.sheets['Empleados']
+        
+        # Añadir formato a las columnas (opcional)
+        # Por ejemplo, formato para columnas numéricas y porcentuales
+        formato_porcentaje = workbook.add_format({'num_format': '0.00%'})
+        formato_numero = workbook.add_format({'num_format': '0.00'})
+        
+        # Aplicar formato a columnas específicas (ajusta los índices según tus columnas)
+        # Por ejemplo, si CHECK, MOD, ER son porcentajes:
+        for col_idx, col_name in enumerate(df.columns):
+            if col_name in ['CHECK', 'MOD', 'ER', 'PERFORMANCE']:
+                # Convertir de texto a número si es necesario
+                worksheet.set_column(col_idx, col_idx, 12, formato_porcentaje)
+            elif col_name in ['CASH', 'SAC', 'PARADAS']:
+                worksheet.set_column(col_idx, col_idx, 12, formato_numero)
+        
+        # Ajustar el ancho de las columnas automáticamente
+        for i, col in enumerate(df.columns):
+            column_width = max(df[col].astype(str).map(len).max(), len(col)) + 2
+            worksheet.set_column(i, i, column_width)
+        
+        # Guardar el archivo
+        writer.close()
+        
+        # Reiniciar el puntero del buffer al principio
+        output.seek(0)
+        
+        # Configurar la respuesta para la descarga del archivo
+        fecha_actual = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"Informe_Empleados_{fecha_actual}.xlsx"
+        
+        response = make_response(output.getvalue())
+        response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        response.headers['Content-Disposition'] = f'attachment; filename={filename}'
+        
+        return response
+        
+    except Exception as e:
+        # Manejo de errores
+        return f"Error al generar el informe: {str(e)}", 500

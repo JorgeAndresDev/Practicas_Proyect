@@ -13,7 +13,7 @@ let config = {
     primary: '#696cff',
     secondary: '#8592a3',
     success: '#03c3ec',
-    info: '#0170B9',
+    info: ' #0170B9',
     warning: '#ffab00',
     danger: '#E82C0C',
     dark: '#233446',

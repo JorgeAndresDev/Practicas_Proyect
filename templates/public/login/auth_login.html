@@ -1,92 +1,48 @@
-<div class="container-fluid ">
-    <div class="authentication-inner ">
-      <div class="card darky">
-        <div class="card-body ">
-          <div class="app-brand justify-content-center">
-            <span class="app-brand-logo">
-              <img
-                class="logo"
-                style="display: flex "
-                src="{{ url_for('static', filename ='./assets/img/logo.png') }}"
-                alt="Logo" width="256px"/>
-            </span>
-          </div>
+<!-- Contenedor principal centrado -->
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center ">
 
-          <form
-            id="formAuthentication"
-            class="mb-3"
-            action="{{ url_for('loginCliente') }}"
-            method="POST">
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input
-                type="email"
-                class="form-control"
-                name="email_user"
-                placeholder="Escribe tu email"
-                id="pass_user"
-                autofocus
-                required />
-            </div>
-            <div class="mb-3 form-password-toggle">
-              <div class="d-flex justify-content-between">
-                <label class="form-label" for="password">Clave</label>
-                <a href="{{ url_for('cpanelRecoveryPassUser') }}">
-                  <small>Olvidó su Clave?</small>
-                </a>
-              </div>
-              <div class="input-group input-group-merge">
-                <input
-                  type="password"
-                  class="form-control"
-                  name="pass_user"
-                  id="passuser"
-                  placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                  aria-describedby="password"
-                  required />
-                <span class="input-group-text cursor-pointer">
-                  <i class="bx bx-hide" id="togglePasswordIcon"></i>
-                </span>
-              </div>
-            </div>
-            <div class="mb-3">
-              <button class="btn btn-primary w-100" type="submit">
-                Entrar ahora
-                <i class="bi bi-arrow-right-circle"></i>
-              </button>
-            </div>
-          </form>
+  <!-- Card del Login -->
+  <div class="card p-4 darky" style="width: 100%; max-width: 400px; border-radius: 1rem;">
+    <div class="card-body">
 
-          <p class="text-center">
-            <a href="./register-user">
-              <span>Crear mi cuenta</span>
-            </a>
-          </p>
-        </div>
+      <!-- Logo -->
+      <div class="text-center mb-4">
+        <img src="{{ url_for('static', filename='assets/img/logo.png') }}" 
+             alt="Logo" 
+             class="img-fluid" 
+             style="max-width: 200px;">
       </div>
+
+      <!-- Formulario -->
+      <form id="formAuthentication" action="{{ url_for('loginCliente') }}" method="POST">
+
+        <div class="mb-3">
+          <label for="email_user" class="form-label">Email</label>
+          <input type="email" class="form-control" name="email_user" placeholder="Escribe tu email" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="pass_user" class="form-label">Clave</label>
+          <div class="input-group">
+            <input type="password" class="form-control" name="pass_user" placeholder="********" required>
+            <span class="input-group-text"><i class="bx bx-hide"></i></span>
+          </div>
+          <div class="text-end mt-1">
+            <a href="{{ url_for('cpanelRecoveryPassUser') }}"><small>¿Olvidó su Clave?</small></a>
+          </div>
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">Entrar ahora <i class="bi bi-arrow-right-circle"></i></button>
+        </div>
+      </form>
+
+      <!-- Registro -->
+      <p class="text-center mt-3">
+        <a href="./register-user">Crear mi cuenta</a>
+      </p>
+
     </div>
   </div>
+
 </div>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-  // Asegúrate de que el selector coincida exactamente con el ID en tu HTML
-  const container = document.querySelector("#myContainer");
-  
-  if (container) {
-    // Inicializa PerfectScrollbar con opciones
-    const ps = new PerfectScrollbar(container, {
-      wheelPropagation: true,
-      suppressScrollX: false
-    });
-    console.log("PerfectScrollbar inicializado correctamente");
-  } else {
-    console.error("El contenedor #myContainer para PerfectScrollbar no fue encontrado.");
-    // Intenta con un selector alternativo si tienes dudas sobre el ID
-    const altContainer = document.querySelector(".scrollable-container");
-    if (altContainer) {
-      new PerfectScrollbar(altContainer);
-      console.log("PerfectScrollbar inicializado con selector alternativo");
-    }
-  }
-});
-</script>

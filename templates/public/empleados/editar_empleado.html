@@ -1,0 +1,65 @@
+{% extends 'public/base_cpanel.html' %}
+
+{% block title %}Sistema | Actualizar Empleado{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+{% endblock %}
+
+{% block body %}
+<div class="card" style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">
+        <a href="/lista_empleados">
+          <i class="bi bi-arrow-left-circle"></i>
+        </a>
+        ACTUALIZAR DATOS DEL EMPLEADO
+      </h3>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-8">
+      <form method="POST" action="/actualizar_empleado">
+        <div class="row">
+          <div class="col-md-12">
+            <!-- Campo oculto para el CC -->
+            <input type="hidden" id="cc" name="cc" value="{{ empleado.CC }}">
+            
+            <div class="form-group mb-3">
+              <label for="nom">Nombre</label>
+              <input type="text" class="form-control" id="nom" name="nom" value="{{ empleado.NOM }}" required>
+            </div>
+            
+            <div class="form-group mb-3">
+              <label for="car">Cargo</label>
+              <select class="form-control" id="car" name="car" required>
+                <option value="CONDUCTOR" {% if empleado.CAR == 'CONDUCTOR' %}selected{% endif %}>Conductor</option>
+                <option value="CONDUCTOR RR" {% if empleado.CAR == 'CONDUCTOR RR' %}selected{% endif %}>Conductor RR</option>
+                <option value="AUXILIAR DE DISTRIBUCION" {% if empleado.CAR == 'AUXILIAR DE DISTRIBUCION' %}selected{% endif %}>Auxiliar de Distribución</option>
+                <option value="RR" {% if empleado.CAR == 'RR' %}selected{% endif %}>RR</option>
+                <option value="TEMPORAL" {% if empleado.CAR == 'TEMPORAL' %}selected{% endif %}>Temporal</option>
+              </select>
+            </div>
+            
+            <div class="form-group mb-3">
+              <label for="centro">Centro de Trabajo</label>
+              <select class="form-control" id="centro" name="centro" required>
+                <option value="COROZAL" {% if empleado.CENTRO == 'COROZAL' %}selected{% endif %}>Corozal</option>
+                <option value="MAGANGUE" {% if empleado.CENTRO == 'MAGANGUE' %}selected{% endif %}>Magangue</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Actualizar Empleado</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block customJS %}
+<script src="{{ url_for('static', filename ='assets/customJS/file.js') }}"></script>
+{% endblock %}
