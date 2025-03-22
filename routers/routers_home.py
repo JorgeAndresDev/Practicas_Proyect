@@ -5,6 +5,9 @@ from mysql.connector.errors import Error
 from flask import request, redirect, render_template
 from flask import render_template, request, redirect, url_for, jsonify
 
+# Importar la conexión desde tu archivo
+from conexion.conexionBD import connectionBD
+
 import pandas as pd
 from conexion.conexionBD import connectionBD
 from flask import Flask, send_file, make_response
@@ -53,13 +56,13 @@ def lista_empleados():
 
 
 @app.route('/detalles-empleado/<int:cc>', methods=['GET'])
-def detalles_empleado(cc):
+def editar_empleado(cc):
     # Obtener los datos del empleado usando la función
     empleado = obtener_empleado_por_cc(cc)
     
     if empleado:
         # Si el empleado existe, pasamos los datos a la plantilla
-        return render_template('detalles_empleado.html', empleado=empleado)
+        return render_template('editar_empleado.html', empleado=empleado)
     else:
         # Si no se encuentra el empleado, mostramos una página de error
         return render_template('error.html', mensaje="Empleado no encontrado")
@@ -182,61 +185,76 @@ def subir_excel():
     return jsonify({"message": "Base de datos actualizada correctamente"}), 200
 
 
-# Ruta para mostrar el formulario de actualización
-@app.route('/editar_empleado/<int:cc>', methods=['GET'])
-def editar_empleado(cc):
+# Ruta para mostrar el formulario de edición
+@app.route('/editar_empleado/<cc>')
+def mostrar_form_editar_empleado(cc):
+    print(f"Intentando editar empleado con CC: {cc}")
+    
     try:
-        # Conectar a la base de datos
-        conn = connectionBD()
+        conn = connectionBD()  # <-- Cambia esto ✅
         cursor = conn.cursor(dictionary=True)
-        
-        # Consultar los datos del empleado
-        sql = "SELECT CC, NOM, CAR, CENTRO FROM tbl_empleados WHERE CC = %s"
-        cursor.execute(sql, (cc,))
+        cursor.execute("SELECT * FROM tbl_empleados WHERE CC = %s", (int(cc),))
         empleado = cursor.fetchone()
-        
         cursor.close()
         conn.close()
         
-        if empleado:
-            # Renderizar la plantilla con los datos del empleado
-            return render_template('editar_empleado.html', empleado=empleado)
-        else:
-            # Si no existe el empleado, redirigir a la lista
+        print(f"Datos del empleado: {empleado}")
+        
+        if empleado is None:
+            flash('Empleado no encontrado', 'danger')
             return redirect(url_for('lista_empleados'))
-            
+        
+        return render_template('public/empleados/editar_empleado.html', empleado=empleado)
+
+    
     except Exception as e:
-        return f"Error: {str(e)}"
+        print(f"Error en editar_empleado: {str(e)}")
+        flash(f'Error al cargar los datos: {str(e)}', 'danger')
+        return redirect(url_for('lista_empleados'))
+
+
+@app.route('/test-editar/<cc>')
+def test_editar(cc):
+    return f"Probando edición para el empleado con CC: {cc}"
 
 # Ruta para procesar la actualización
 @app.route('/actualizar_empleado', methods=['POST'])
-def actualizar_empleado():
+def procesar_actualizacion_empleado():
+    # Obtener los datos del formulario
+    cc = request.form['cc']
+    nombre = request.form['nom']
+    cargo = request.form['car']
+    centro = request.form['centro']
+    
     try:
-        # Obtener datos del formulario
-        cc = request.form['cc']
-        nom = request.form['nom']
-        car = request.form['car']
-        centro = request.form['centro']
-        
-        # Conectar a la base de datos
+        # Crear conexión y cursor
         conn = connectionBD()
         cursor = conn.cursor()
         
-        # Actualizar solo los campos especificados
-        sql = "UPDATE tbl_empleados SET NOM = %s, CAR = %s, CENTRO = %s WHERE CC = %s"
-        cursor.execute(sql, (nom, car, centro, cc))
+        # Query para actualizar los datos del empleado
+        sql = """
+            UPDATE tbl_empleados 
+            SET NOM = %s, CAR = %s, CENTRO = %s 
+            WHERE CC = %s
+        """
         
-        # Guardar cambios
+        # Ejecutar la consulta
+        cursor.execute(sql, (nombre, cargo, centro, cc))
+        
+        # Confirmar los cambios en la base de datos
         conn.commit()
         
+        # Cerrar cursor y conexión
         cursor.close()
         conn.close()
         
-        # Redirigir a la lista de empleados
-        return redirect(url_for('lista_empleados'))
-        
+        flash('Datos del empleado actualizados correctamente', 'success')
+    
     except Exception as e:
-        return f"Error: {str(e)}"
+        flash(f'Error al actualizar los datos: {str(e)}', 'danger')
+    
+    # Redireccionar a la lista de empleados
+    return redirect(url_for('lista_empleados'))
 
 
 

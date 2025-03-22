@@ -90,13 +90,13 @@
                               title="Ver detalles">
                               <i class="bi bi-eye"></i>
                             </a>           
-                            <a
-                              href="/editar_empleado/{{ empleado.CC }}"
-                              class="btn btn-primary btn-sm border-end"
-                              title="Actualizar Registro">
+                            <a href="{{ url_for('mostrar_form_editar_empleado', cc=empleado.CC) }}" 
+                              class="btn btn-primary btn-sm border-end" 
+                              title="Actualizar Registro"
+                              onclick="console.log('CC: {{ empleado.CC }}')">
                               <i class="bi bi-arrow-clockwise"></i>
                             </a>
-                          
+
                             <a
                               href="{{ url_for('eliminar_empleado', cc=empleado.CC) }}"
                               class="btn btn-danger btn-sm"
@@ -104,6 +104,7 @@
                               onclick="return confirm('¿Estás seguro de eliminar al empleado {{ empleado.NOM }}?');">
                               <i class="bi bi-trash3"></i>
                             </a>
+                            
                           </div>                          
                         </td>
                       </tr>
