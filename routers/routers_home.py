@@ -14,9 +14,18 @@ from flask import Flask, send_file, make_response
 from io import BytesIO
 from datetime import datetime
 # Importando cenexión a BD
-from controllers.FuncionesEmpleados.F_empleados import buscarEmpleadoBD, buscarEmpleadoUnico, obtener_empleado_por_cc, registrar_empleado, sql_lista_empleadosBD
-from controllers.FuncionesUsuarios.funciones_usuarios import eliminarUsuario, lista_usuariosBD, sql_eliminar_empleado
 from controllers.funciones_login import *
+
+from controllers.funciones_usuarios.EliminarUsuario import eliminarUsuario
+from controllers.funciones_usuarios.lista_usuarios_db import lista_usuariosBD
+
+from controllers.FuncionesEmpleados.BuscarEmpleadoBD import buscarEmpleadoBD
+from controllers.FuncionesEmpleados.BuscarEmpleadoUnico import buscar_empleado_unico
+from controllers.FuncionesEmpleados.Obtener_empleado_por_cc import obtener_empleado_por_cc
+from controllers.FuncionesEmpleados.Registrar_empleados import registrar_empleado
+from controllers.FuncionesEmpleados.SQL_lista_empleadosBD import sql_lista_empleadosBD
+from controllers.FuncionesEmpleados.Subir_excel import subir_empleados_excel
+
 
 PATH_URL = "public/empleados"
 
