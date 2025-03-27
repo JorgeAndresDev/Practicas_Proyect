@@ -27,7 +27,7 @@ from controllers.FuncionesEmpleados.SQL_lista_empleadosBD import sql_lista_emple
 from controllers.FuncionesEmpleados.Subir_excel import subir_empleados_excel
 
 
-PATH_URL = "public/empleados"
+
 
 
 # Rutas para las funciones de empleados
